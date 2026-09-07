@@ -7,7 +7,7 @@
 :root {
     --ink: #1c1917;
     --paper: #faf6f0;
-    --accent: #d95d39;
+    --accent: #b4081a;
     --accent-dark: #a8442a;
     --line: #e3d9c9;
     --text-muted: #6b6459;
@@ -16,8 +16,8 @@
 
 body {
     font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    color: var(--ink);
-    background-color: var(--paper);
+    color: var(--paper);
+    background-color: #070708;
     line-height: 1.6;
 }
 
@@ -33,7 +33,7 @@ h1, .brand {
 
 /* THE HEADER */
 .site-header {
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid gray;
 }
 
 .site-header .container {
@@ -46,7 +46,7 @@ h1, .brand {
 .brand {
     font-size: 1.3rem;
     font-weight: 700;
-    color: var(--ink);
+    color: var(--paper);
     text-decoration: none;
 }
 
@@ -56,12 +56,30 @@ h1, .brand {
 }
 
 .site-header nav a {
-    color: var(--ink);
+    color: var(--paper);
     text-decoration: none;
     font-size: 0.95rem;
 }
 
 /* HERO SECTION OR SOMETHIN*/
+
+@media (max-width: 600px) {
+    .hero-grid {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "identity"
+            "photo"
+            "details";
+    }
+
+    .hero-photo {
+        max-width: 220px;
+    }
+
+    .social-links {
+        justify-content: flex-start;
+    }
+}
 
 .hero {
     padding: 4.5rem 0 5rem;
@@ -76,8 +94,7 @@ h1, .brand {
     gap: 1.5rem 3rem;
 }
 
-.hero-identity {
-    grid-area: identity;
+.hero-identity { grid-area: identity;
 }
 
 .hero-details {
@@ -99,7 +116,7 @@ h1, .brand {
 }
 
 .bio {
-    color: var(--text-muted);
+    color: var(--line);
     max-width: 480px;
     margin-bottom: 1.5rem;
 }
@@ -172,29 +189,67 @@ h1, .brand {
     border: 3px solid var(--ink);
 }
 
+/* EDUCATION/SKILL SECTION*/
+
+.title-grid
+{
+    display: grid;
+    grid-template-columns: 4fr 4fr;
+}
+
+.education-title
+{
+    text-align: left;
+    font-size: clamp(0.3rem, 2rem);
+    border-style: none none none solid;
+    border-color: #b4081a;
+    padding-left: 1rem;
+    font-size: clamp(1rem, 5vw, 2rem);
+}
+
+.hobby-title
+{
+    text-align: left;
+    font-size: clamp(1rem, 2rem);
+    border-style: none none none solid;
+    border-color: #b4081a;
+    padding-left: 1rem;
+    font-size: clamp(1rem, 5vw, 2rem);
+}
+
+.content-grid
+{
+    display: grid;
+    grid-template-columns: 4fr 4fr;
+}
+
+.content-section
+{
+    text-align: center;
+    padding: 1rem;
+}
+
+.education 
+{
+    max-width:960px;
+    margin: auto;
+    padding: 0 1.5rem;
+    padding-bottom: 2rem;
+}
+
+.content-section dt
+{
+    text-align: left;
+}
+
+
+
+
 /* THE FOOTER*/
 
 .site-footer {
-    padding: 1.5rem;
+    padding: 1rem;
     color: var(--text-muted);
     font-size: 0.85rem;
-    border-top: 1px solid var(--line);
-}
-
-@media (max-width: 600px) {
-    .hero-grid {
-        grid-template-columns: 1fr;
-        grid-template-areas:
-            "identity"
-            "photo"
-            "details";
-    }
-
-    .hero-photo {
-        max-width: 220px;
-    }
-
-    .social-links {
-        justify-content: flex-start;
-    }
+    border-top: 1px solid gray;
 }
