@@ -289,7 +289,7 @@ h1, .brand {
 
 .experience-description,
 .empty-state {
-    color: var(--text-muted);
+    color: #c8ced0;
 }
 
 .experience-status {
