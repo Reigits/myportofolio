@@ -29,8 +29,8 @@ class Education(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=255)
     description = models.TextField()
-    started_at = models.PositiveBigIntegerField()
-    ended_at = models.PositiveBigIntegerField(blank=True, null=True)
+    started_at = models.PositiveIntegerField()
+    ended_at = models.PositiveIntegerField(blank=True, null=True)
 
     def __str__(self):
         return self.title
