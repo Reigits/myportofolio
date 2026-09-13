@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from main.models import Experience
+from main.models import *
 
 
 def show_main(request):
@@ -11,6 +11,8 @@ def show_main(request):
         "bio": (
             "An individual who happens to be a student at CSUI and really likes many things, primarily tech-stuff."
         ),
+        "education_list" : Education.objects.all(),
+        "hobby_list" : Hobby.objects.all(),
     }
     return render(request, "index.html", context)
 

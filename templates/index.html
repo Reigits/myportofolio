@@ -60,15 +60,25 @@
             </div>
             <div class="content-grid">
                 <div class="content-section">
-                    <dt>&middot; MI Plus Asy-Syukriyyah (2013 - 2019)</dt>
-                    <dt>&middot; Sinar Cendekia Boarding School (2019 - 2022)</dt>
-                    <dt>&middot; SMAIT Asy-Syukriyyah (2022 - 2025)</dt>
-                    <dt>&middot; Universitas Indonesia (2025 - Present)</dt>
+                {% for education in education_list %}
+                    <dt>
+                        &middot; {{ education.title }} ({{ education.started_at }} -
+                        {% if education.is_ongoing %}
+                        Sekarang)
+                        {% else %}
+                        {{ education.ended_at }})
+                        {% endif %}
+                    </dt>
+                {% empty %}
+                    <dt>Belom ada data yang ditambah...</dt>
+                {% endfor %}
                 </div>
                 <div class="content-section">
-                    <dt>&middot; Photography</dt>
-                    <dt>&middot; Editing Pics/Vids</dt>
-                    <dt>&middot; Browsing the Internet</dt>
+                    {% for hobby in hobby_list %}
+                    <dt>&middot; {{ hobby.title }} </dt>
+                    {% empty %}
+                    <dt>Belom ada data yang ditambah...</dt>
+                {% endfor %}
                 </div>
             </div>
         </section>

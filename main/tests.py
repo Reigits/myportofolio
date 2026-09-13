@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from main.models import Experience
+from main.models import *
 
 
 class MainTest(TestCase):
@@ -11,6 +11,17 @@ class MainTest(TestCase):
             title="Asisten Dosen PBP",
             description="Membantu mahasiswa memahami pengembangan web.",
             category="part-time",
+        )
+
+        self.education = Education.objects.create(
+            title = "Universitas Indonesia",
+            description = "education test",
+            started_at = 1987,
+            ended_at = 2007,
+        )
+
+        self.hobby = Hobby.objects.create(
+            title = "games",
         )
 
     def test_main_url_is_accessible(self):
@@ -56,3 +67,13 @@ class MainTest(TestCase):
         self.assertFalse(self.experience.is_ongoing)
         self.assertContains(response, "Selesai")
         self.assertNotContains(response, "Sedang berlangsung")
+
+
+    def test_education_model(self):
+        self.assertEqual(str(self.education), "Universitas Indonesia") 
+        self.assertEqual(self.education.description, "education test") 
+        self.assertEqual(self.education.started_at, 1987)
+        self.assertEqual(self.education.ended_at, 2007)
+    
+    def test_hobby_model(self):
+       self.assertEqual(self.hobby.title, "games") 
