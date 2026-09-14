@@ -23,4 +23,6 @@ AI DISCLOSURE:
 
 - Saya menggunakan Gemini untuk mencari tahu terkait dengan syntax-syntax css yang saya belum sepenuhnya pahami.
 - Saya juga menggunakan pallete generator untuk mendapatkan warna yang sesuai dengan apa yang saya inginkan.
+- Ada satu error yang memerlukan bantuan AI, saat deploy web porto, ada kasus dimana model Education bagian field ```started_at``` dan ```ended_at``` masih tergolong sebagai timestamp, namun karena model menggunakan PositiveBigIntegerField web akan selalu mereturn 
+```ProgrammingError``` karena adanya mismatch data type saat input data, sehingga saya harus menulis beberapa perintah SQL secara langsung untuk menghapus column tersebut dan mengganti nya dengan column yang berbeda tipe.
 
