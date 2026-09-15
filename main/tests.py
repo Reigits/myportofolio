@@ -15,7 +15,6 @@ class MainTest(TestCase):
 
         self.education = Education.objects.create(
             title = "Universitas Indonesia",
-            description = "education test",
             started_at = 1987,
             ended_at = 2007,
         )
