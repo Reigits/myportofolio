@@ -15,14 +15,14 @@ def create_project(request):
         return redirect("main:show_projects")
 
     context = {
-        "name": "Burhan",
+        "name": "Ahmad Rafa Robyan",
         "form": form,
     }
     return render(request, "projects_form.html", context)
 
 def show_projects(request):
     context = {
-        "name": "Burhan",
+        "name": "Ahmad Rafa Robyan",
         "project_list": Project.objects.all(),
     }
     return render(request, "project.html", context)
