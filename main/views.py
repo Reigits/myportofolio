@@ -19,6 +19,13 @@ def create_project(request):
     }
     return render(request, "projects_form.html", context)
 
+def show_projects(request):
+    context = {
+        "name": "Burhan",
+        "project_list": Project.objects.all(),
+    }
+    return render(request, "project.html", context)
+
 def show_main(request):
     context = {
         "name": "Ahmad Rafa Robyan",
