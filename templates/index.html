@@ -1,97 +1,64 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ name }} - Portfolio</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/style.css">
-</head>
-<body>
-    <header class="site-header">
-        <div class="container">
-            <a href="{% url 'main:show_main' %}" class="brand">{{ name }}</a>
-            <nav>
-                <a href="{% url 'main:show_main' %}">Profile</a>
-                <a href="{% url 'main:show_experience' %}">Experience</a>
-            </nav>
-        </div>
-    </header>
-
-    {% block content %}
-
-    <main>
-        <section class="hero" id="profile">
-            <div class="container hero-grid">
-                <div class="hero-identity">
-                    <p class="hero-kicker">Computer Science &middot; Universitas Indonesia</p>
-                    <h1>{{ name }}</h1>
-                </div>
-                <div class="hero-photo">
-                    <div class="photo-block"></div>
-                    <img class="avatar" src="/static/img/the_actual_photo.jpg" alt="Photo of rafrob">
-                </div>
-                <div class="hero-details">
-                    <p class="bio">{{ bio }}</p>
-                    <dl class="meta-list">
-                        <div class="meta-row">
-                            <dt>NPM</dt>
-                            <dd>{{ npm }}</dd>
-                        </div>
-                        <div class="meta-row">
-                            <dt>Program</dt>
-                            <dd>{{ study_program }}</dd>
-                        </div>
-                    </dl>
-                    <div class="social-links">
-                        <a href="https://github.com/Reigits" class="social-link">GitHub</a>
-                        <a href="https://www.linkedin.com/in/ahmad-rafa-robyan/" class="social-link">LinkedIn</a>
-                        <a href="mailto:rafarobyan1@gmail.com" class="social-link">Email</a>
+{% extends 'base.html' %}
+{% block content %}
+<main>
+    <section class="hero" id="profile">
+        <div class="container hero-grid">
+            <div class="hero-identity">
+                <p class="hero-kicker">Computer Science &middot; Universitas Indonesia</p>
+                <h1>{{ name }}</h1>
+            </div>
+            <div class="hero-photo">
+                <div class="photo-block"></div>
+                <img class="avatar" src="/static/img/the_actual_photo.jpg" alt="Photo of rafrob">
+            </div>
+            <div class="hero-details">
+                <p class="bio">{{ bio }}</p>
+                <dl class="meta-list">
+                    <div class="meta-row">
+                        <dt>NPM</dt>
+                        <dd>{{ npm }}</dd>
                     </div>
+                    <div class="meta-row">
+                        <dt>Program</dt>
+                        <dd>{{ study_program }}</dd>
+                    </div>
+                </dl>
+                <div class="social-links">
+                    <a href="https://github.com/Reigits" class="social-link">GitHub</a>
+                    <a href="https://www.linkedin.com/in/ahmad-rafa-robyan/" class="social-link">LinkedIn</a>
+                    <a href="mailto:rafarobyan1@gmail.com" class="social-link">Email</a>
                 </div>
             </div>
-        </section>
-        <section class="education">
-            <div class="title-grid">
-                <h1 class="education-title">My Education</h1>
-                <h1 class="hobby-title">My Hobby</h1>
-            </div>
-            <div class="content-grid">
-                <div class="content-section">
-                {% for education in education_list %}
-                    <dt>
-                        &middot; {{ education.title }} ({{ education.started_at }} -
-                        {% if education.is_ongoing %}
-                        Sekarang)
-                        {% else %}
-                        {{ education.ended_at }})
-                        {% endif %}
-                    </dt>
-                {% empty %}
-                    <dt>Belom ada data yang ditambah...</dt>
-                {% endfor %}
-                </div>
-                <div class="content-section">
-                    {% for hobby in hobby_list %}
-                    <dt>&middot; {{ hobby.title }} </dt>
-                    {% empty %}
-                    <dt>Belom ada data yang ditambah...</dt>
-                {% endfor %}
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <footer class="site-footer">
-        <div class="container">
-            <p>&copy; 2026 {{ name }}. Fakultas Ilmu Komputer, Universitas Indonesia.</p>
         </div>
-    </footer>
-
-{% endblock %}
-
-</body>
-</html>
+    </section>
+    <section class="education">
+        <div class="title-grid">
+            <h1 class="education-title">My Education</h1>
+            <h1 class="hobby-title">My Hobby</h1>
+        </div>
+        <div class="content-grid">
+            <div class="content-section">
+            {% for education in education_list %}
+                <dt>
+                    &middot; {{ education.title }} ({{ education.started_at }} -
+                    {% if education.is_ongoing %}
+                    Sekarang)
+                    {% else %}
+                    {{ education.ended_at }})
+                    {% endif %}
+                </dt>
+            {% empty %}
+                <dt>Belom ada data yang ditambah...</dt>
+            {% endfor %}
+            </div>
+            <div class="content-section">
+                {% for hobby in hobby_list %}
+                <dt>&middot; {{ hobby.title }} </dt>
+                {% empty %}
+                <dt>Belom ada data yang ditambah...</dt>
+            {% endfor %}
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock content %}
