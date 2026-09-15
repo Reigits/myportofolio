@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block meta %}
+    <title>Projects - {{ name }}</title>
+{% endblock meta %}
+{% block content %}
+<main>
+        <section class="experience-section" id="experience">
+            <div class="container">
+            <p class="section-kicker">Karya yang saya bangun</p>
+            <h1>Projects</h1>
+
+                <div class="experience-grid">
+                    {% for project in project_list %}
+                        <article class="experience-card">
+                            <span class="experience-category">{{ project.tech_stack }}</span>
+                            <h2>{{ project.title }}</h2>
+                            <p class="experience-description">{{ project.description }}</p>
+
+                            {% if project.project_url %}
+                                <p class="experience-status">
+                                    <a href="{{ project.project_url }}">Lihat proyek</a>
+                                </p>
+                            {% endif %}
+                        </article>
+                    {% empty %}
+                        <p class="empty-state">
+                            Belum ada proyek yang ditambahkan.
+                        </p>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    </main>
+{% endblock content %}
