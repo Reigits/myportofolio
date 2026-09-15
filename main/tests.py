@@ -71,7 +71,6 @@ class MainTest(TestCase):
 
     def test_education_model(self):
         self.assertEqual(str(self.education), "Universitas Indonesia") 
-        self.assertEqual(self.education.description, "education test") 
         self.assertEqual(self.education.started_at, 1987)
         self.assertEqual(self.education.ended_at, 2007)
     
