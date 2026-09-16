@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.core import serializers
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -6,6 +7,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from main.models import *
 from main.forms import ProjectForm
 
+@login_required(login_url="/admin/login/")
 def create_project(request):
     form = ProjectForm(request.POST or None)
 
@@ -37,6 +39,7 @@ def show_projects(request):
     }
     return render(request, "project.html", context)
 
+@login_required(login_url="/admin/login/")
 def delete_project(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
 
