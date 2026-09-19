@@ -63,24 +63,6 @@ h1, .brand {
 
 /* HERO SECTION OR SOMETHIN*/
 
-@media (max-width: 600px) {
-    .hero-grid {
-        grid-template-columns: 1fr;
-        grid-template-areas:
-            "identity"
-            "photo"
-            "details";
-    }
-
-    .hero-photo {
-        max-width: 220px;
-    }
-
-    .social-links {
-        justify-content: flex-start;
-    }
-}
-
 .hero {
     padding: 4.5rem 0 5rem;
 }
@@ -187,6 +169,24 @@ h1, .brand {
     object-fit: cover;
     border-radius: var(--radius);
     border: 3px solid var(--ink);
+}
+
+@media (max-width: 600px) {
+    .hero-grid {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "identity"
+            "photo"
+            "details";
+    }
+
+    .hero-photo {
+        max-width: 220px;
+    }
+
+    .social-links {
+        justify-content: flex-start;
+    }
 }
 
 /* EDUCATION/SKILL SECTION*/
