@@ -91,7 +91,6 @@ def experience_view(request):
         return create_experience(request)
     return show_experience(request)
 
-
 # METHOD MEMBUAT FORM
 
 @login_required(login_url="/admin/login/")
@@ -187,3 +186,44 @@ def delete_project(request, project_id):
     messages.success(request, "Project berhasil dihapus!")
     return redirect("main:show_projects")
 
+# METHOD EDIT FORM
+
+@login_required(login_url="/admin/login/")
+@require_POST
+def edit_edu(request, edu_id):
+    edu = get_object_or_404(Education, pk=edu_id)
+    form = EduForm(request.POST, instance=edu)
+    if form.is_valid():
+        form.save()
+        messages.success(request, f"Edukasi '{edu.title}' berhasil diperbarui!")
+    return redirect("main:show_main")
+
+@login_required(login_url="/admin/login/")
+@require_POST
+def edit_hobby(request, hobby_id):
+    hobby = get_object_or_404(Hobby, pk=hobby_id)
+    form = HobbyForm(request.POST, instance=hobby)
+    if form.is_valid():
+        form.save()
+        messages.success(request, f"Hobi '{hobby.title}' berhasil diperbarui!")
+    return redirect("main:show_main")
+
+@login_required(login_url="/admin/login/")
+@require_POST
+def edit_project(request, project_id):
+    project = get_object_or_404(Project, pk=project_id)
+    form = ProjectForm(request.POST, instance=project)
+    if form.is_valid():
+        form.save()
+        messages.success(request, f"Proyek '{project.title}' berhasil diperbarui!")
+    return redirect("main:show_projects")
+
+@login_required(login_url="/admin/login/")
+@require_POST
+def edit_experience(request, experience_id):
+    experience = get_object_or_404(Experience, pk=experience_id)
+    form = ExperienceForm(request.POST, instance=experience)
+    if form.is_valid():
+        form.save()
+        messages.success(request, f"Pengalaman '{experience.title}' berhasil diperbarui!")
+    return redirect("main:show_experience")
