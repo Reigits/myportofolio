@@ -25,6 +25,11 @@ class Experience(models.Model):
     def is_ongoing(self):
         return self.ended_at is None
 
+    @property
+    def form(self):
+        from main.forms import ExperienceForm
+        return ExperienceForm(instance=self)
+
 class Education(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=255)
@@ -38,12 +43,22 @@ class Education(models.Model):
     def is_ongoing(self):
         return self.ended_at is None
 
+    @property
+    def form(self):
+        from main.forms import EduForm
+        return EduForm(instance=self)
+
 class Hobby(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=255)
 
     def __str__(self):
         return self.title
+
+    @property
+    def form(self):
+        from main.forms import HobbyForm
+        return HobbyForm(instance=self)
 
 class Project(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -55,3 +70,8 @@ class Project(models.Model):
 
     def __str__(self):
         return self.title
+
+    @property
+    def form(self):
+        from main.forms import ProjectForm
+        return ProjectForm(instance=self)
