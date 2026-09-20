@@ -21,7 +21,7 @@
     <div class="popover-modal__content">
         <h1>Add New Projects</h1>
         <form method="post"
-              action="{% url 'main:create_project' %}"
+              action="{% url 'main:show_projects' %}"
               class="project-form">
             {% csrf_token %}
             {% for field in form %}

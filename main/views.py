@@ -16,13 +16,12 @@ def create_project(request):
     if request.method == "POST" and form.is_valid():
         form.save()
         messages.success(request, "Proyek baru berhasil ditambahkan!")
-        return redirect("main:show_projects")
 
     context = {
         "name": "Ahmad Rafa Robyan",
         "form": form,
     }
-    return render(request, "projects_form.html", context)
+    return redirect("main:show_projects")
 
 def show_projects(request):
     json_response = get_projects_json(request)
@@ -41,6 +40,12 @@ def show_projects(request):
         "form" : ProjectForm()
     }
     return render(request, "project.html", context)
+
+# karena form menjadi popover dan bukan halaman terpisah, ini dipake biar gak perlu ada project/add di url
+def project_view(request):
+    if request.method == "POST":
+        return create_project(request)
+    return show_projects(request)
 
 @login_required(login_url="/admin/login/")
 def delete_project(request, project_id):
