@@ -205,7 +205,7 @@ h1, .brand {
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    justify-content: space-between;
+    justify-content: flex-start;
 }
 
 .content-row
@@ -213,12 +213,21 @@ h1, .brand {
     display: flex;
     gap: 2.5rem;
     justify-content:space-between;
+    padding-left: 0.5rem;
+}
+
+.content-row dt
+{
+    margin: 0;
+    padding-right: 1rem;
+    line-height: 1.4;
 }
 
 .action-row
 {
     display: flex;
     gap: 0.5rem;
+    flex-shrink: 0;
 }
 
 .title-button-header
@@ -470,7 +479,7 @@ h1, .brand {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 0.5rem;
     margin-top: 1rem;
 }
 
