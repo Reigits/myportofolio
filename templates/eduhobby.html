@@ -10,21 +10,24 @@
             <div class="content-collumn">
                 {% for edu in education_list %}
                 <div class="content-row">
-                            <dt>
-                                &middot; {{ edu.title }} ({{ edu.started_at }} -
-                                {% if edu.is_ongoing %}
-                                Sekarang)
-                                {% else %}
-                                {{ edu.ended_at }})
-                                {% endif %}
-                            </dt>
-                            {% if user.is_authenticated %}
-                                {% include 'components/edu_delete_modal.html' %}
-                            {% endif %}
+                    <dt>
+                        &middot; {{ edu.title }} ({{ edu.started_at }} -
+                        {% if edu.is_ongoing %}
+                        Sekarang)
+                        {% else %}
+                        {{ edu.ended_at }})
+                        {% endif %}
+                    </dt>
+                    {% if user.is_authenticated %}
+                    <div class="action-row">
+                        {% include 'components/edu_edit_form.html' %}
+                        {% include 'components/edu_delete_modal.html' %}
+                    </div>
+                    {% endif %}
+                </div>
                     {% empty %}
                         <dt>Belom ada data yang ditambah...</dt>
-                    {% endfor %}
-                </div>
+                {% endfor %}
             </div>
         </div>
 
@@ -37,17 +40,21 @@
             </div>
 
             <div class="content-collumn">
-                    {% for hobby in hobby_list %}
+                {% for hobby in hobby_list %}
                     <div class="content-row">
-                            <dt>
-                                &middot; {{ hobby.title }} </dt>
-                            {% if user.is_authenticated %}
-                                {% include 'components/hobby_delete_modal.html' %}
-                            {% endif %}
+                        <dt>
+                            &middot; {{ hobby.title }} </dt>
+                        {% if user.is_authenticated %}
+                        <div class="action-row">
+                            {% include 'components/hobby_edit_form.html' %}
+                            {% include 'components/hobby_delete_modal.html' %}
+                        </div>
+                        {% endif %}
+                    </div>
                     {% empty %}
                     <dt>Belom ada data yang ditambah...</dt>
-                    {% endfor %}
-                </div>
+                {% endfor %}
             </div>
         </div>
+    </div>
 </section>

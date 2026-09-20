@@ -28,9 +28,12 @@
                         {% else %}
                             <p class="experience-status">Selesai</p>
                         {% endif %}
+                        <div class="project-actions">
                         {% if user.is_authenticated %}
+                            {% include 'components/experience_edit_form.html' %}
                             {% include 'components/experience_delete_modal.html' %}
                         {% endif %}
+                        </div>
                     </article>
                 {% empty %}
                     <p class="empty-state">

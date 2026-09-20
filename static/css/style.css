@@ -215,6 +215,12 @@ h1, .brand {
     justify-content:space-between;
 }
 
+.action-row
+{
+    display: flex;
+    gap: 0.5rem;
+}
+
 .title-button-header
 {
     display: flex;
@@ -260,6 +266,11 @@ h1, .brand {
     {
         flex-direction: column;
         gap: 0.5rem;
+    }
+
+    .action-row
+    {
+        flex-direction: column;
     }
 }
 /* EXPERIENCE SECTION */

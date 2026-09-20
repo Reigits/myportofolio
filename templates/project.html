@@ -41,7 +41,8 @@
                                         <a href="{{ project.project_url }}" class="button">Lihat Project</a>
                                     {% endif %}
                                     {% if user.is_authenticated %}
-                                        {% include "components/project_delete_modal.html" with project=project %}
+                                        {% include 'components/project_edit_form.html' %}
+                                        {% include 'components/project_delete_modal.html' with project=project %}
                                     {% endif %}
                                 </div>
                             </div>

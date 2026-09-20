@@ -1,0 +1,48 @@
+<button type="button"
+        class="button button-secondary small"
+        popovertarget="edit-project-{{ project.id }}"
+        aria-label="Edit {{ project.title }}"
+        title="Edit Proyek">
+    Edit
+</button>
+<div id="edit-project-{{ project.id }}"
+     class="popover-modal"
+     popover="auto"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="edit-project-title-{{ project.id }}">
+    <button type="button"
+            class="popover-modal__backdrop"
+            popovertarget="edit-project-{{ project.id }}"
+            popovertargetaction="hide"
+            aria-label="Tutup form edit proyek"></button>
+    <div class="popover-modal__content">
+        <button type="button"
+                class="popover-modal__close"
+                popovertarget="edit-project-{{ project.id }}"
+                popovertargetaction="hide"
+                aria-label="Tutup form edit proyek">×</button>
+        <h1 id="edit-project-title-{{ project.id }}">Edit Proyek</h1>
+        <form method="post" action="{% url 'main:edit_project' project.id %}" class="project-form">
+            {% csrf_token %}
+            {% for field in project.form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% for error in field.errors %}
+                        <p class="form-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            <div class="popover-modal__actions">
+                <button type="button"
+                        class="button button-secondary"
+                        popovertarget="edit-project-{{ project.id }}"
+                        popovertargetaction="hide">
+                    Batal
+                </button>
+                <button type="submit" class="button">Simpan Perubahan</button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,48 @@
+<button type="button"
+        class="button button-secondary small"
+        popovertarget="edit-hobby-{{ hobby.id }}"
+        aria-label="Edit {{ hobby.title }}"
+        title="Edit Hobi">
+    Edit
+</button>
+<div id="edit-hobby-{{ hobby.id }}"
+     class="popover-modal"
+     popover="auto"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="edit-hobby-title-{{ hobby.id }}">
+    <button type="button"
+            class="popover-modal__backdrop"
+            popovertarget="edit-hobby-{{ hobby.id }}"
+            popovertargetaction="hide"
+            aria-label="Tutup form edit hobi"></button>
+    <div class="popover-modal__content">
+        <button type="button"
+                class="popover-modal__close"
+                popovertarget="edit-hobby-{{ hobby.id }}"
+                popovertargetaction="hide"
+                aria-label="Tutup form edit hobi">×</button>
+        <h1 id="edit-hobby-title-{{ hobby.id }}">Edit Hobi</h1>
+        <form method="post" action="{% url 'main:edit_hobby' hobby.id %}" class="project-form">
+            {% csrf_token %}
+            {% for field in hobby.form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% for error in field.errors %}
+                        <p class="form-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            <div class="popover-modal__actions">
+                <button type="button"
+                        class="button button-secondary"
+                        popovertarget="edit-hobby-{{ hobby.id }}"
+                        popovertargetaction="hide">
+                    Batal
+                </button>
+                <button type="submit" class="button">Simpan Perubahan</button>
+            </div>
+        </form>
+    </div>
+</div>
