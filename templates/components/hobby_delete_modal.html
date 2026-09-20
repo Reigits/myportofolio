@@ -1,12 +1,10 @@
-<p class="experience-status">
-    <button type="button"
-            class="button button-danger"
-            popovertarget="delete-hobby-{{ hobby.id }}"
-            aria-label="Hapus {{ hobby.title }}"
-            title="Hapus hobby">
-        Hapus Hobby
-    </button>
-</p>
+<button type="button"
+        class="button button-danger small"
+        popovertarget="delete-hobby-{{ hobby.id }}"
+        aria-label="Hapus {{ hobby.title }}"
+        title="Hapus hobby">
+    Hapus Hobby
+</button>
 <div id="delete-hobby-{{ hobby.id }}"
      class="popover-modal"
      popover="auto"

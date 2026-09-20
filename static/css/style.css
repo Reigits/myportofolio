@@ -194,7 +194,7 @@ h1, .brand {
 .title-grid
 {
     display: grid;
-    grid-template-columns: 4fr 4fr;
+    grid-template-columns: 1fr 1fr;
 }
 
 
@@ -202,7 +202,7 @@ h1, .brand {
 {
     display: flex;
     justify-content: space-between;
-    align-items: left;
+    align-items: center;
     gap: 0.5rem;
     padding: 0.5rem;
 }
@@ -220,12 +220,17 @@ h1, .brand {
 
 .content-grid
 {
-    display: grid;
-    grid-template-columns: 4fr 4fr;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .content-section
 {
+    display:flex;
+    flex-direction: column;
+    justify-content: space-between;
     text-align: center;
     padding: 1rem;
 }
@@ -598,4 +603,12 @@ h1, .brand {
     color: var(--text-muted);
     font-size: 0.85rem;
     border-top: 1px solid gray;
+}
+
+/* ELEMENT MODIFICATIONS */
+
+.small 
+{
+    padding: 0.45rem 0.85rem;
+    font-size: 0.85rem;
 }

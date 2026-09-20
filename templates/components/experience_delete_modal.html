@@ -1,12 +1,10 @@
-<p class="experience-status">
-    <button type="button"
-            class="button button-danger"
-            popovertarget="delete-experience-{{ experience.id }}"
-            aria-label="Hapus {{ experience.title }}"
-            title="Hapus pengalaman">
-        Hapus Pengalaman
-    </button>
-</p>
+<button type="button"
+        class="button button-danger small"
+        popovertarget="delete-experience-{{ experience.id }}"
+        aria-label="Hapus {{ experience.title }}"
+        title="Hapus pengalaman">
+    Hapus Pengalaman
+</button>
 <div id="delete-experience-{{ experience.id }}"
      class="popover-modal"
      popover="auto"
