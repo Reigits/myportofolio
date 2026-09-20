@@ -9,6 +9,8 @@ urlpatterns = [
     path("experience/", experience_view, name="show_experience"),
     path("projects/", project_view , name="show_projects"),
     path("api/projects/", get_projects_json, name="get_projects_json"),
-    path("projects/<uuid:project_id>/delete/",delete_project,name="delete_project"),
-    path("experience/<uuid:experience_id>/delete/",delete_experience,name="delete_experience"),
+    path("edu/<uuid:edu_id>/delete/", delete_edu, name="delete_edu"),
+    path("hobby/<uuid:hobby_id>/delete/", delete_hobby, name="delete_hobby"),
+    path("projects/<uuid:project_id>/delete/", delete_project, name="delete_project"),
+    path("experience/<uuid:experience_id>/delete/", delete_experience, name="delete_experience"),
 ]

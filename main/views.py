@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from main.models import *
-from main.forms import ExperienceForm, ProjectForm
+from main.forms import *
 
 @login_required(login_url="/admin/login/")
 @require_POST
@@ -66,6 +66,25 @@ def get_projects_json(request):
     return HttpResponse(projects_json, content_type="application/json")
 
 def show_main(request):
+    edu_form = EduForm(request.POST or None)
+    hobby_form = HobbyForm(request.POST or None)
+
+    if request.method == "POST":
+        if not request.user.is_authenticated:
+            return redirect("/admin/login/")
+
+        form_type = request.POST.get("form_type")
+
+        if form_type == "education" and edu_form.is_valid():
+            edu_form.save()
+            messages.success(request, "Edukasi baru berhasil ditambahkan!")
+            return redirect("main:show_main")
+
+        elif form_type == "hobby" and hobby_form.is_valid():
+            hobby_form.save()
+            messages.success(request, "Hobi baru berhasil ditambahkan!")
+            return redirect("main:show_main")
+
     context = {
         "name": "Ahmad Rafa Robyan",
         "npm": "2506620721",
@@ -75,15 +94,62 @@ def show_main(request):
         ),
         "education_list" : Education.objects.all(),
         "hobby_list" : Hobby.objects.all(),
+        "edu_form" : EduForm(),
+        "hobby_form" : HobbyForm()
     }
     return render(request, "index.html", context)
 
+@login_required(login_url="/admin/login/")
+@require_POST
+def create_edu(request):
+    form = EduForm(request.POST or None)
+
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, "Edukasi baru berhasil ditambahkan!")
+
+    context = {
+        "name": "Ahmad Rafa Robyan",
+        "form": form,
+    }
+    return redirect("main:show_main_edu")
+
+@login_required(login_url="/admin/login/")
+@require_POST
+def delete_edu(request, edu_id):
+    edu = get_object_or_404(Education, pk=edu_id)
+    edu.delete()
+    messages.success(request, "Edukasi berhasil dihapus!")
+    return redirect("main:show_main")
+
+@login_required(login_url="/admin/login/")
+@require_POST
+def create_hobby(request):
+    form = HobbyForm(request.POST or None)
+
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, "Hobi baru berhasil ditambahkan!")
+
+    context = {
+        "name": "Ahmad Rafa Robyan",
+        "form": form,
+    }
+    return redirect("main:show_main_hobby")
+
+@login_required(login_url="/admin/login/")
+@require_POST
+def delete_hobby(request, hobby_id):
+    hobby = get_object_or_404(Hobby, pk=hobby_id)
+    hobby.delete()
+    messages.success(request, "Hobby berhasil dihapus!")
+    return redirect("main:show_main")
 
 def show_experience(request):
     context = {
         "name": "Ahmad Rafa Robyan",
         "experience_list": Experience.objects.all(),
-        "experience_form" : ExperienceForm()
+        "experience_form" : ExperienceForm(),
     }
     return render(request, "experience.html", context)
 

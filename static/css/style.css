@@ -262,6 +262,19 @@ h1, .brand {
     border-top: 1px solid var(--line);
 }
 
+.experience-header h1 {
+    margin-bottom: 0;
+}
+
+.experience-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
 .section-kicker {
     color: var(--accent-dark);
     font-size: 0.8rem;
