@@ -90,6 +90,7 @@ class EduForm(ModelForm):
 
 class HobbyForm(ModelForm):
     class Meta:
+        model = Hobby
         fields = [
                 "title",
             ]
@@ -109,6 +110,7 @@ class HobbyForm(ModelForm):
 
 class ExperienceForm(ModelForm):
     class Meta:
+        model = Experience
         fields = [
                 "title",
                 "description",

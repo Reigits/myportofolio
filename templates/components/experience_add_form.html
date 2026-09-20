@@ -1,0 +1,51 @@
+<p class="experience-status">
+    <button type="button"
+            class="button"
+            popovertarget="add-experience"
+            aria-label="Tambah Pengalaman"
+            title="Tambah Pengalaman">
+        + Tambah Pengalaman
+    </button>
+</p>
+
+<div id="add-experience"
+     class="popover-modal"
+     popover="auto"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="add-experience-title">
+    <button type="button"
+            class="popover-modal__backdrop"
+            popovertarget="add-experience"
+            popovertargetaction="hide"
+            aria-label="Tutup form tambah pengalaman"></button>
+    <div class="popover-modal__content">
+        <button type="button"
+                class="popover-modal__close"
+                popovertarget="add-experience"
+                popovertargetaction="hide"
+                aria-label="Tutup form tambah pengalaman"></button>
+        <h1 id="add-experience-title">Tambah Pengalaman Baru</h1>
+        <form method="post" action="{% url 'main:show_experience' %}" class="project-form">
+            {% csrf_token %}
+            {% for field in experience_form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% for error in field.errors %}
+                        <p class="form-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            <div class="popover-modal__actions">
+                <button type="button"
+                        class="button button-secondary"
+                        popovertarget="add-experience"
+                        popovertargetaction="hide">
+                    Batal
+                </button>
+                <button type="submit" class="button">Tambah Pengalaman</button>
+            </div>
+        </form>
+    </div>
+</div>
