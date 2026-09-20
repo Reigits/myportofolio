@@ -13,4 +13,8 @@ urlpatterns = [
     path("hobby/<uuid:hobby_id>/delete/", delete_hobby, name="delete_hobby"),
     path("projects/<uuid:project_id>/delete/", delete_project, name="delete_project"),
     path("experience/<uuid:experience_id>/delete/", delete_experience, name="delete_experience"),
+    path("education/<uuid:edu_id>/edit/", edit_edu, name="edit_edu"),
+    path("hobby/<uuid:hobby_id>/edit/", edit_hobby, name="edit_hobby"),
+    path("projects/<uuid:project_id>/edit/", edit_project, name="edit_project"),
+    path("experience/<uuid:experience_id>/edit/", edit_experience, name="edit_experience"),
 ]

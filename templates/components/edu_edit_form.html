@@ -1,0 +1,49 @@
+<button type="button"
+        class="button button-secondary"
+        popovertarget="edit-edu-{{ edu.id }}"
+        aria-label="Edit {{ edu.title }}"
+        title="Edit Pendidikan">
+    Edit
+</button>
+
+<div id="edit-edu-{{ edu.id }}"
+     class="popover-modal"
+     popover="auto"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="edit-edu-title-{{ edu.id }}">
+    <button type="button"
+            class="popover-modal__backdrop"
+            popovertarget="edit-edu-{{ edu.id }}"
+            popovertargetaction="hide"
+            aria-label="Tutup form edit pendidikan"></button>
+    <div class="popover-modal__content">
+        <button type="button"
+                class="popover-modal__close"
+                popovertarget="edit-edu-{{ edu.id }}"
+                popovertargetaction="hide"
+                aria-label="Tutup form edit pendidikan">×</button>
+        <h1 id="edit-edu-title-{{ edu.id }}">Edit Riwayat Pendidikan</h1>
+        <form method="post" action="{% url 'main:edit_edu' edu.id %}" class="project-form">
+            {% csrf_token %}
+            {% for field in edu.form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% for error in field.errors %}
+                        <p class="form-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            <div class="popover-modal__actions">
+                <button type="button"
+                        class="button button-secondary"
+                        popovertarget="edit-edu-{{ edu.id }}"
+                        popovertargetaction="hide">
+                    Batal
+                </button>
+                <button type="submit" class="button">Simpan Perubahan</button>
+            </div>
+        </form>
+    </div>
+</div>
