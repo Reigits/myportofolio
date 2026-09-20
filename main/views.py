@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from main.models import *
-from main.forms import ProjectForm
+from main.forms import ExperienceForm, ProjectForm
 
 @login_required(login_url="/admin/login/")
 @require_POST
@@ -83,7 +83,34 @@ def show_experience(request):
     context = {
         "name": "Ahmad Rafa Robyan",
         "experience_list": Experience.objects.all(),
+        "experience_form" : ExperienceForm()
     }
     return render(request, "experience.html", context)
 
+@login_required(login_url="/admin/login/")
+@require_POST
+def create_experience(request):
+    form = ExperienceForm(request.POST or None)
+    if form.is_valid:
+        form.save()
+        messages.success(request, "Pengalaman baru berhasil ditambahkan!")
+
+    context = {
+        "name": "Ahmad Rafa Robyan",
+        "form": form,
+    }
+    return redirect("main:show_experience")
+
+@login_required(login_url="/admin/login/")
+@require_POST
+def delete_experience(request, experience_id):
+    experience = get_object_or_404(Experience, pk=experience_id)
+    experience.delete()
+    messages.success(request, "Pengalaman berhasil dihapus!")
+    return redirect("main:show_experience")
+
+def experience_view(request):
+    if request.method == "POST":
+        return create_experience(request)
+    return show_experience(request)
 

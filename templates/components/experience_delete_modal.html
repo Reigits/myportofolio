@@ -1,0 +1,43 @@
+<p class="experience-status">
+    <button type="button"
+            class="button button-danger"
+            popovertarget="delete-experience-{{ experience.id }}"
+            aria-label="Hapus {{ experience.title }}"
+            title="Hapus pengalaman">
+        Hapus Pengalaman
+    </button>
+</p>
+<div id="delete-experience-{{ experience.id }}"
+     class="popover-modal"
+     popover="auto"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="delete-experience-title-{{ experience.id }}">
+    <button type="button"
+            class="popover-modal__backdrop"
+            popovertarget="delete-experience-{{ experience.id }}"
+            popovertargetaction="hide"
+            aria-label="Tutup konfirmasi hapus"></button>
+    <div class="popover-modal__content">
+        <button type="button"
+                class="popover-modal__close"
+                popovertarget="delete-experience-{{ experience.id }}"
+                popovertargetaction="hide"
+                aria-label="Tutup konfirmasi hapus">×</button>
+        <h2 id="delete-project-title-{{ project.id }}">Hapus Pengalaman?</h2>
+        <p>
+            Apakah Anda yakin ingin menghapus
+            <strong>{{ experience.title }}</strong>?
+        </p>
+        <div class="popover-modal__actions">
+            <button type="button"
+                    class="button button-secondary"
+                    popovertarget="delete-experience-{{ experience.id }}"
+                    popovertargetaction="hide">Batal</button>
+            <form method="post" action="{% url 'main:delete_experience' experience.id %}">
+                {% csrf_token %}
+                <button type="submit" class="button button-danger">Ya, Hapus</button>
+            </form>
+        </div>
+    </div>
+</div>

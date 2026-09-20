@@ -7,7 +7,9 @@
             <p class="section-kicker">Perjalanan saya sejauh ini</p>
             <div class="title-button-header">
                 <h1>Experience</h1>
-                {% include 'components/experience_add_form.html' %}
+                {% if user.is_authenticated %}
+                    {% include 'components/experience_add_form.html' %}
+                {% endif %}
             </div>
 
             <div class="experience-grid">
@@ -25,6 +27,9 @@
                             <p class="experience-status">Sedang berlangsung</p>
                         {% else %}
                             <p class="experience-status">Selesai</p>
+                        {% endif %}
+                        {% if user.is_authenticated %}
+                            {% include 'components/experience_delete_modal.html' %}
                         {% endif %}
                     </article>
                 {% empty %}
