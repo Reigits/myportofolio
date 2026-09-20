@@ -10,11 +10,7 @@
                 <div class="project-header">
                     <h1>Projects</h1>
                     {% if user.is_authenticated %}
-                    <a href="{% url 'main:create_project' %}"
-                       class="button project-add-button">
-                        <span aria-hidden="true">+</span>
-                        Tambah Proyek
-                    </a>
+                        {% include 'components/project_add_form.html' %}
                     {% endif %}
                 </div>
                 <form method="get"

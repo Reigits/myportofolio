@@ -462,7 +462,7 @@ h1, .brand {
     margin-top: 0;
 }
 
-.project-delete-modal {
+.popover-modal {
     display: none;
     position: fixed;
     inset: 0;
@@ -479,11 +479,11 @@ h1, .brand {
     justify-content: center;
 }
 
-.project-delete-modal:popover-open {
+.popover-modal:popover-open {
     display: flex;
 }
 
-.project-delete-modal__backdrop {
+.popover-modal__backdrop {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -494,7 +494,7 @@ h1, .brand {
     cursor: default;
 }
 
-.project-delete-modal__content {
+.popover-modal__content {
     position: relative;
     z-index: 1;
     width: min(100%, 480px);
@@ -505,7 +505,7 @@ h1, .brand {
     box-shadow: 0 1rem 3rem rgba(28, 25, 23, 0.22);
 }
 
-.project-delete-modal__content h2 {
+.popover-modal__content h2 {
     margin: 0 0 0.75rem;
     font-family:
         "Space Grotesk",
@@ -514,7 +514,7 @@ h1, .brand {
     font-size: 1.5rem;
 }
 
-.project-delete-modal__close {
+.popover-modal__close {
     position: absolute;
     top: 1rem;
     right: 1rem;
@@ -527,7 +527,7 @@ h1, .brand {
     cursor: pointer;
 }
 
-.project-delete-modal__actions {
+.popover-modal__actions {
     display: flex;
     justify-content: flex-end;
     gap: 0.75rem;
