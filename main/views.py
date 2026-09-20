@@ -8,62 +8,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from main.models import *
 from main.forms import *
 
-@login_required(login_url="/admin/login/")
-@require_POST
-def create_project(request):
-    form = ProjectForm(request.POST or None)
-
-    if request.method == "POST" and form.is_valid():
-        form.save()
-        messages.success(request, "Proyek baru berhasil ditambahkan!")
-
-    context = {
-        "name": "Ahmad Rafa Robyan",
-        "form": form,
-    }
-    return redirect("main:show_projects")
-
-def show_projects(request):
-    json_response = get_projects_json(request)
-
-    projects = serializers.deserialize(
-        "json",
-        json_response.content.decode("utf-8"),
-    )
-    projects = [project.object for project in projects]
-    title_query = request.GET.get("title", "").strip()
-
-    context = {
-        "name": "Ahmad Rafa Robyan",
-        "project_list": projects,
-        "title_query": title_query,
-        "form" : ProjectForm()
-    }
-    return render(request, "project.html", context)
-
-# karena form menjadi popover dan bukan halaman terpisah, ini dipake biar gak perlu ada project/add di url
-def project_view(request):
-    if request.method == "POST":
-        return create_project(request)
-    return show_projects(request)
-
-@login_required(login_url="/admin/login/")
-@require_POST
-def delete_project(request, project_id):
-    project = get_object_or_404(Project, pk=project_id)
-    project.delete()
-    messages.success(request, "Project berhasil dihapus!")
-    return redirect("main:show_projects")
-
-def get_projects_json(request):
-    title_query = request.GET.get("title", "").strip()
-    projects = Project.objects.all()
-
-    if title_query:
-        projects = projects.filter(title__icontains=title_query)
-
-    projects_json = serializers.serialize("json", projects)
-    return HttpResponse(projects_json, content_type="application/json")
+# METHOD MENAMPILKAN
 
 def show_main(request):
     edu_form = EduForm(request.POST or None)
@@ -99,6 +44,56 @@ def show_main(request):
     }
     return render(request, "index.html", context)
 
+def show_projects(request):
+    json_response = get_projects_json(request)
+
+    projects = serializers.deserialize(
+        "json",
+        json_response.content.decode("utf-8"),
+    )
+    projects = [project.object for project in projects]
+    title_query = request.GET.get("title", "").strip()
+
+    context = {
+        "name": "Ahmad Rafa Robyan",
+        "project_list": projects,
+        "title_query": title_query,
+        "form" : ProjectForm()
+    }
+    return render(request, "project.html", context)
+
+def get_projects_json(request):
+    title_query = request.GET.get("title", "").strip()
+    projects = Project.objects.all()
+
+    if title_query:
+        projects = projects.filter(title__icontains=title_query)
+
+    projects_json = serializers.serialize("json", projects)
+    return HttpResponse(projects_json, content_type="application/json")
+
+# karena form menjadi popover dan bukan halaman terpisah, ini dipake biar gak perlu ada project/add di url
+def project_view(request):
+    if request.method == "POST":
+        return create_project(request)
+    return show_projects(request)
+
+def show_experience(request):
+    context = {
+        "name": "Ahmad Rafa Robyan",
+        "experience_list": Experience.objects.all(),
+        "experience_form" : ExperienceForm(),
+    }
+    return render(request, "experience.html", context)
+
+def experience_view(request):
+    if request.method == "POST":
+        return create_experience(request)
+    return show_experience(request)
+
+
+# METHOD MEMBUAT FORM
+
 @login_required(login_url="/admin/login/")
 @require_POST
 def create_edu(request):
@@ -113,14 +108,6 @@ def create_edu(request):
         "form": form,
     }
     return redirect("main:show_main_edu")
-
-@login_required(login_url="/admin/login/")
-@require_POST
-def delete_edu(request, edu_id):
-    edu = get_object_or_404(Education, pk=edu_id)
-    edu.delete()
-    messages.success(request, "Edukasi berhasil dihapus!")
-    return redirect("main:show_main")
 
 @login_required(login_url="/admin/login/")
 @require_POST
@@ -139,22 +126,6 @@ def create_hobby(request):
 
 @login_required(login_url="/admin/login/")
 @require_POST
-def delete_hobby(request, hobby_id):
-    hobby = get_object_or_404(Hobby, pk=hobby_id)
-    hobby.delete()
-    messages.success(request, "Hobby berhasil dihapus!")
-    return redirect("main:show_main")
-
-def show_experience(request):
-    context = {
-        "name": "Ahmad Rafa Robyan",
-        "experience_list": Experience.objects.all(),
-        "experience_form" : ExperienceForm(),
-    }
-    return render(request, "experience.html", context)
-
-@login_required(login_url="/admin/login/")
-@require_POST
 def create_experience(request):
     form = ExperienceForm(request.POST or None)
     if form.is_valid:
@@ -169,14 +140,50 @@ def create_experience(request):
 
 @login_required(login_url="/admin/login/")
 @require_POST
+def create_project(request):
+    form = ProjectForm(request.POST or None)
+
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, "Proyek baru berhasil ditambahkan!")
+
+    context = {
+        "name": "Ahmad Rafa Robyan",
+        "form": form,
+    }
+    return redirect("main:show_projects")
+
+# METHOD MENGHAPUS DATA
+
+@login_required(login_url="/admin/login/")
+@require_POST
+def delete_edu(request, edu_id):
+    edu = get_object_or_404(Education, pk=edu_id)
+    edu.delete()
+    messages.success(request, "Edukasi berhasil dihapus!")
+    return redirect("main:show_main")
+
+@login_required(login_url="/admin/login/")
+@require_POST
+def delete_hobby(request, hobby_id):
+    hobby = get_object_or_404(Hobby, pk=hobby_id)
+    hobby.delete()
+    messages.success(request, "Hobby berhasil dihapus!")
+    return redirect("main:show_main")
+
+@login_required(login_url="/admin/login/")
+@require_POST
 def delete_experience(request, experience_id):
     experience = get_object_or_404(Experience, pk=experience_id)
     experience.delete()
     messages.success(request, "Pengalaman berhasil dihapus!")
     return redirect("main:show_experience")
 
-def experience_view(request):
-    if request.method == "POST":
-        return create_experience(request)
-    return show_experience(request)
+@login_required(login_url="/admin/login/")
+@require_POST
+def delete_project(request, project_id):
+    project = get_object_or_404(Project, pk=project_id)
+    project.delete()
+    messages.success(request, "Project berhasil dihapus!")
+    return redirect("main:show_projects")
 
