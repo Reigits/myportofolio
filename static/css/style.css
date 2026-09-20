@@ -197,6 +197,13 @@ h1, .brand {
     grid-template-columns: 4fr 4fr;
 }
 
+
+.title-button-grid
+{
+    display: grid;
+    grid-template-columns: 4fr 2fr;
+}
+
 .education-title
 {
     text-align: left;

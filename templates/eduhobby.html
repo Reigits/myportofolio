@@ -1,0 +1,29 @@
+<section class="education">
+    <div class="title-grid">
+        <h1 class="education-title">My Education</h1>
+        <h1 class="hobby-title">My Hobby</h1>
+    </div>
+    <div class="content-grid">
+        <div class="content-section">
+        {% for education in education_list %}
+            <dt>
+                &middot; {{ education.title }} ({{ education.started_at }} -
+                {% if education.is_ongoing %}
+                Sekarang)
+                {% else %}
+                {{ education.ended_at }})
+                {% endif %}
+            </dt>
+        {% empty %}
+            <dt>Belom ada data yang ditambah...</dt>
+        {% endfor %}
+        </div>
+        <div class="content-section">
+            {% for hobby in hobby_list %}
+            <dt>&middot; {{ hobby.title }} </dt>
+            {% empty %}
+            <dt>Belom ada data yang ditambah...</dt>
+        {% endfor %}
+        </div>
+    </div>
+</section>
