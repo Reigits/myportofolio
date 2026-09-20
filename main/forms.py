@@ -1,6 +1,9 @@
-from django.forms import ModelForm, TextInput, Textarea, URLInput
+from pydoc import text
+from random import choices
 
-from main.models import Project
+from django.forms import ModelForm, TextInput, Textarea, URLInput, NumberInput, Select, DateTimeInput
+
+from main.models import *
 
 class ProjectForm(ModelForm):
     class Meta:
@@ -50,3 +53,107 @@ class ProjectForm(ModelForm):
                 }
             ),
         }
+
+class EduForm(ModelForm):
+    class Meta:
+        model = Education
+        fields = [
+                "title",
+                "started_at",
+                "ended_at"
+            ]
+
+        labels = {
+                "title" : "Nama Sekolah",
+                "started_at" : "Tahun Mulai",
+                "ended_at" : "Tahun Selesai"
+            }
+
+        widgets = {
+                "title" : TextInput(
+                    attrs = {
+                        "placeholder" : "Harvard",
+                        "maxlength" : 255,
+                        }
+                    ),
+                "started_at" : NumberInput(
+                    attrs = {
+                        "placeholder" : 1984,
+                        }
+                    ),
+                "ended_at" : NumberInput(
+                    attrs = {
+                        "placeholder" : 2045,
+                        }
+                    )
+            }
+
+class HobbyForm(ModelForm):
+    class Meta:
+        fields = [
+                "title",
+            ]
+
+        labels = {
+                "title" : "Hobby yang Kamu Miliki",
+            }
+
+        widgets = {
+                "title" : TextInput(
+                    attrs = {
+                        "placeholder" : "Coding",
+                        "maxlength" : 255,
+                        }
+                    ),     
+            }
+
+class ExperienceForm(ModelForm):
+    class Meta:
+        fields = [
+                "title",
+                "description",
+                "category",
+                "thumbnail",
+                "started_at",
+                "ended_at",
+            ]
+        
+        labels = {
+                "title" : "Nama Pengalaman",
+                "description" : "Deskripsi Pengalaman",
+                "category" : "Tipe Pengalaman",
+                "thumbnail" : "Gambar Pengalaman",
+                "started_at" : "Tanggal Mulai",
+                "ended_at" : "Tanggal Berakhir",
+            }
+
+        widgets = {
+                "title" : TextInput(
+                    attrs = {
+                        "placeholder" : "Certified Person",
+                        "maxlength" : 255,
+                        }
+                    ),
+                "description" : TextInput(
+                    attrs = {
+                        "placeholder" : "Orang yang Handal",
+                        "maxlength" : 255,
+                        }
+                    ),
+                "category" : Select(
+                    choices = Experience.EXPERIENCE_CHOICES,
+                    attrs = {
+                        "placeholder" : "Freelance",
+                        }
+                    ),
+                "started_at": DateTimeInput(
+                        attrs={
+                            "type": "datetime-local",
+                        }
+                    ),
+                "ended_at": DateTimeInput(
+                        attrs={
+                            "type": "datetime-local",
+                        }
+                    ),
+            }
