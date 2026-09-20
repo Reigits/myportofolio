@@ -198,29 +198,23 @@ h1, .brand {
 }
 
 
-.title-button-grid
+.title-button-header
 {
-    display: grid;
-    grid-template-columns: 4fr 2fr;
+    display: flex;
+    justify-content: space-between;
+    align-items: left;
+    gap: 0.5rem;
+    padding: 0.5rem;
 }
 
-.education-title
+.eduhobby-title
 {
     text-align: left;
-    font-size: clamp(0.3rem, 2rem);
+    font-size: clamp(0.2rem, 0.5rem, 2rem);
     border-style: none none none solid;
     border-color: #b4081a;
     padding-left: 1rem;
-    font-size: clamp(1rem, 5vw, 2rem);
-}
-
-.hobby-title
-{
-    text-align: left;
-    font-size: clamp(1rem, 2rem);
-    border-style: none none none solid;
-    border-color: #b4081a;
-    padding-left: 1rem;
+    margin: 0.5rem 0 0,5rem;
     font-size: clamp(1rem, 5vw, 2rem);
 }
 
@@ -249,6 +243,18 @@ h1, .brand {
     text-align: left;
 }
 
+@media (max-width: 600px) {
+    .title-button-header
+    {
+        flex-direction: column;
+    }
+
+    .button
+    {
+        width:100%;
+        place-items: center;
+    }
+}
 /* EXPERIENCE SECTION */
 
 .experience-section {
