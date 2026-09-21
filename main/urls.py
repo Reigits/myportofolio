@@ -17,4 +17,7 @@ urlpatterns = [
     path("hobby/<uuid:hobby_id>/edit/", edit_hobby, name="edit_hobby"),
     path("projects/<uuid:project_id>/edit/", edit_project, name="edit_project"),
     path("experience/<uuid:experience_id>/edit/", edit_experience, name="edit_experience"),
+    path("register/", register, name="register"),
+    path("login/", login_user, name="login"),
+    path("logout/", logout_user, name="logout"),
 ]
