@@ -143,6 +143,10 @@ def logout_user(request):
 @login_required(login_url="/login/")
 @require_POST
 def create_edu(request):
+
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
     form = EduForm(request.POST or None)
 
     if request.method == "POST" and form.is_valid():
@@ -158,6 +162,10 @@ def create_edu(request):
 @login_required(login_url="/login/")
 @require_POST
 def create_hobby(request):
+
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
     form = HobbyForm(request.POST or None)
 
     if request.method == "POST" and form.is_valid():
@@ -173,7 +181,12 @@ def create_hobby(request):
 @login_required(login_url="/login/")
 @require_POST
 def create_experience(request):
+
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
     form = ExperienceForm(request.POST or None)
+
     if form.is_valid:
         form.save()
         messages.success(request, "Pengalaman baru berhasil ditambahkan!")
@@ -187,6 +200,10 @@ def create_experience(request):
 @login_required(login_url="/login/")
 @require_POST
 def create_project(request):
+
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
     form = ProjectForm(request.POST or None)
 
     if request.method == "POST" and form.is_valid():
