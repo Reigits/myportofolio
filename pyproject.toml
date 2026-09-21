@@ -1,0 +1,10 @@
+[tool.basedpyright]
+typeCheckingMode = "basic"
+reportMissingTypeStubs = false
+reportMissingImports = false
+reportUnknownVariableType = false
+reportUnknownMemberType = false
+reportUnknownArgumentType = false
+reportUnknownParameterType = false
+reportAny = false
+reportExplicitAny = false
