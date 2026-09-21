@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.views.decorators.http import require_GET, require_POST
 from django.core import serializers
 from django.http import HttpResponse, response
@@ -139,7 +140,7 @@ def logout_user(request):
 
 # METHOD MEMBUAT FORM
 
-@login_required(login_url="/admin/login/")
+@login_required(login_url="/login/")
 @require_POST
 def create_edu(request):
     form = EduForm(request.POST or None)
@@ -154,7 +155,7 @@ def create_edu(request):
     }
     return redirect("main:show_main_edu")
 
-@login_required(login_url="/admin/login/")
+@login_required(login_url="/login/")
 @require_POST
 def create_hobby(request):
     form = HobbyForm(request.POST or None)
@@ -169,7 +170,7 @@ def create_hobby(request):
     }
     return redirect("main:show_main_hobby")
 
-@login_required(login_url="/admin/login/")
+@login_required(login_url="/login/")
 @require_POST
 def create_experience(request):
     form = ExperienceForm(request.POST or None)
@@ -183,7 +184,7 @@ def create_experience(request):
     }
     return redirect("main:show_experience")
 
-@login_required(login_url="/admin/login/")
+@login_required(login_url="/login/")
 @require_POST
 def create_project(request):
     form = ProjectForm(request.POST or None)
@@ -200,7 +201,7 @@ def create_project(request):
 
 # METHOD MENGHAPUS DATA
 
-@login_required(login_url="/admin/login/")
+@login_required(login_url="/login/")
 @require_POST
 def delete_edu(request, edu_id):
     edu = get_object_or_404(Education, pk=edu_id)
@@ -208,7 +209,7 @@ def delete_edu(request, edu_id):
     messages.success(request, "Edukasi berhasil dihapus!")
     return redirect("main:show_main")
 
-@login_required(login_url="/admin/login/")
+@login_required(login_url="/login/")
 @require_POST
 def delete_hobby(request, hobby_id):
     hobby = get_object_or_404(Hobby, pk=hobby_id)
@@ -216,7 +217,7 @@ def delete_hobby(request, hobby_id):
     messages.success(request, "Hobby berhasil dihapus!")
     return redirect("main:show_main")
 
-@login_required(login_url="/admin/login/")
+@login_required(login_url="/login/")
 @require_POST
 def delete_experience(request, experience_id):
     experience = get_object_or_404(Experience, pk=experience_id)
@@ -224,7 +225,7 @@ def delete_experience(request, experience_id):
     messages.success(request, "Pengalaman berhasil dihapus!")
     return redirect("main:show_experience")
 
-@login_required(login_url="/admin/login/")
+@login_required(login_url="/login/")
 @require_POST
 def delete_project(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
@@ -234,7 +235,7 @@ def delete_project(request, project_id):
 
 # METHOD EDIT FORM
 
-@login_required(login_url="/admin/login/")
+@login_required(login_url="/login/")
 @require_POST
 def edit_edu(request, edu_id):
     edu = get_object_or_404(Education, pk=edu_id)
@@ -244,7 +245,7 @@ def edit_edu(request, edu_id):
         messages.success(request, f"Edukasi '{edu.title}' berhasil diperbarui!")
     return redirect("main:show_main")
 
-@login_required(login_url="/admin/login/")
+@login_required(login_url="/login/")
 @require_POST
 def edit_hobby(request, hobby_id):
     hobby = get_object_or_404(Hobby, pk=hobby_id)
@@ -254,7 +255,7 @@ def edit_hobby(request, hobby_id):
         messages.success(request, f"Hobi '{hobby.title}' berhasil diperbarui!")
     return redirect("main:show_main")
 
-@login_required(login_url="/admin/login/")
+@login_required(login_url="/login/")
 @require_POST
 def edit_project(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
@@ -264,7 +265,7 @@ def edit_project(request, project_id):
         messages.success(request, f"Proyek '{project.title}' berhasil diperbarui!")
     return redirect("main:show_projects")
 
-@login_required(login_url="/admin/login/")
+@login_required(login_url="/login/")
 @require_POST
 def edit_experience(request, experience_id):
     experience = get_object_or_404(Experience, pk=experience_id)
