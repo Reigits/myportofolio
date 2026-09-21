@@ -93,7 +93,7 @@ def experience_view(request):
         return create_experience(request)
     return show_experience(request)
 
-# METHOD REGISTER/LOGIN
+# METHOD REGISTER/LOGIN/LOGOUT
 
 def register(request):
     form = UserCreationForm(request.POST or None)
@@ -121,6 +121,10 @@ def login_user(request):
         "form": form,
     }
     return render(request, "login.html", context)
+
+def logout_user(request):
+    logout(request)
+    return redirect("main:show_main")
 
 # METHOD MEMBUAT FORM
 
