@@ -221,6 +221,10 @@ def create_project(request):
 @login_required(login_url="/login/")
 @require_POST
 def delete_edu(request, edu_id):
+
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
     edu = get_object_or_404(Education, pk=edu_id)
     edu.delete()
     messages.success(request, "Edukasi berhasil dihapus!")
@@ -229,6 +233,10 @@ def delete_edu(request, edu_id):
 @login_required(login_url="/login/")
 @require_POST
 def delete_hobby(request, hobby_id):
+
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
     hobby = get_object_or_404(Hobby, pk=hobby_id)
     hobby.delete()
     messages.success(request, "Hobby berhasil dihapus!")
@@ -237,6 +245,10 @@ def delete_hobby(request, hobby_id):
 @login_required(login_url="/login/")
 @require_POST
 def delete_experience(request, experience_id):
+
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
     experience = get_object_or_404(Experience, pk=experience_id)
     experience.delete()
     messages.success(request, "Pengalaman berhasil dihapus!")
@@ -245,6 +257,10 @@ def delete_experience(request, experience_id):
 @login_required(login_url="/login/")
 @require_POST
 def delete_project(request, project_id):
+
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
     project = get_object_or_404(Project, pk=project_id)
     project.delete()
     messages.success(request, "Project berhasil dihapus!")
@@ -255,6 +271,10 @@ def delete_project(request, project_id):
 @login_required(login_url="/login/")
 @require_POST
 def edit_edu(request, edu_id):
+
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
     edu = get_object_or_404(Education, pk=edu_id)
     form = EduForm(request.POST, instance=edu)
     if form.is_valid():
@@ -265,6 +285,10 @@ def edit_edu(request, edu_id):
 @login_required(login_url="/login/")
 @require_POST
 def edit_hobby(request, hobby_id):
+
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
     hobby = get_object_or_404(Hobby, pk=hobby_id)
     form = HobbyForm(request.POST, instance=hobby)
     if form.is_valid():
@@ -275,6 +299,10 @@ def edit_hobby(request, hobby_id):
 @login_required(login_url="/login/")
 @require_POST
 def edit_project(request, project_id):
+
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
     project = get_object_or_404(Project, pk=project_id)
     form = ProjectForm(request.POST, instance=project)
     if form.is_valid():
@@ -285,6 +313,10 @@ def edit_project(request, project_id):
 @login_required(login_url="/login/")
 @require_POST
 def edit_experience(request, experience_id):
+
+    if not request.user.is_superuser:
+        raise PermissionDenied
+
     experience = get_object_or_404(Experience, pk=experience_id)
     form = ExperienceForm(request.POST, instance=experience)
     if form.is_valid():
