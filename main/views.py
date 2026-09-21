@@ -93,6 +93,22 @@ def experience_view(request):
         return create_experience(request)
     return show_experience(request)
 
+# METHOD REGISTER
+
+def register(request):
+    form = UserCreationForm(request.POST or None)
+
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, "Akun berhasil dibuat. Silakan login.")
+        return redirect("main:login")
+
+    context = {
+        "name": "Ahmad Rafa Robyan",
+        "form": form,
+    }
+    return render(request, "register.html", context)
+
 # METHOD MEMBUAT FORM
 
 @login_required(login_url="/admin/login/")
