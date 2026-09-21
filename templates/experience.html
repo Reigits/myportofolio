@@ -7,7 +7,7 @@
             <p class="section-kicker">Perjalanan saya sejauh ini</p>
             <div class="project-header">
                 <h1>Experience</h1>
-                {% if user.is_authenticated %}
+                {% if user.is_superuser %}
                     {% include 'components/experience_add_form.html' %}
                 {% endif %}
             </div>
@@ -29,7 +29,7 @@
                             <p class="experience-status">Selesai</p>
                         {% endif %}
                         <div class="project-actions">
-                        {% if user.is_authenticated %}
+                        {% if user.is_superuser %}
                             {% include 'components/experience_edit_form.html' %}
                             {% include 'components/experience_delete_modal.html' %}
                         {% endif %}

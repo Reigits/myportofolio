@@ -3,7 +3,7 @@
         <div class="content-collumn">
             <div class="title-button-header">
                 <h1 class="eduhobby-title">My Education</h1>
-                {% if user.is_authenticated %}
+                {% if user.is_superuser %}
                     {% include 'components/edu_add_form.html' %}
                 {% endif %}
             </div>
@@ -18,7 +18,7 @@
                         {{ edu.ended_at }})
                         {% endif %}
                     </dt>
-                    {% if user.is_authenticated %}
+                    {% if user.is_superuser %}
                     <div class="action-row">
                         {% include 'components/edu_edit_form.html' %}
                         {% include 'components/edu_delete_modal.html' %}
@@ -34,7 +34,7 @@
         <div class="content-collumn">
             <div class="title-button-header"> 
                 <h1 class="eduhobby-title">My Hobby</h1>
-                {% if user.is_authenticated %}
+                {% if user.is_superuser %}
                     {% include 'components/hobby_add_form.html' %}
                 {% endif %}
             </div>
@@ -44,7 +44,7 @@
                     <div class="content-row">
                         <dt>
                             &middot; {{ hobby.title }} </dt>
-                        {% if user.is_authenticated %}
+                        {% if user.is_superuser %}
                         <div class="action-row">
                             {% include 'components/hobby_edit_form.html' %}
                             {% include 'components/hobby_delete_modal.html' %}

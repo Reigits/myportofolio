@@ -9,7 +9,7 @@
                 <p class="section-kicker">Karya yang saya bangun</p>
                 <div class="project-header">
                     <h1>Projects</h1>
-                    {% if user.is_authenticated %}
+                    {% if user.is_superuser %}
                         {% include 'components/project_add_form.html' %}
                     {% endif %}
                 </div>
@@ -40,7 +40,7 @@
                                     {% if project.project_url %}
                                         <a href="{{ project.project_url }}" class="button">Lihat Project</a>
                                     {% endif %}
-                                    {% if user.is_authenticated %}
+                                    {% if user.is_superuser %}
                                         {% include 'components/project_edit_form.html' %}
                                         {% include 'components/project_delete_modal.html' with project=project %}
                                     {% endif %}
