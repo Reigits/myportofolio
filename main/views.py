@@ -14,8 +14,12 @@ from main.forms import *
 # METHOD MENAMPILKAN
 
 def show_main(request):
+    # form buat popover
     edu_form = EduForm(request.POST or None)
     hobby_form = HobbyForm(request.POST or None)
+
+    # last login buat ditampilin
+    last_login = request.COOKIES.get('last_login', 'Belom ada sesi login / Cookie tidak ditemukan')
 
     if request.method == "POST":
         if not request.user.is_authenticated:
@@ -43,7 +47,8 @@ def show_main(request):
         "education_list" : Education.objects.all(),
         "hobby_list" : Hobby.objects.all(),
         "edu_form" : EduForm(),
-        "hobby_form" : HobbyForm()
+        "hobby_form" : HobbyForm(),
+        "last_login": last_login,
     }
     return render(request, "index.html", context)
 
