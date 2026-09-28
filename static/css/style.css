@@ -655,6 +655,7 @@ h1, .brand {
     font-weight: 700;
     margin-bottom: 0.15rem;
     font-family: "Space Grotesk", -apple-system, sans-serif;
+    color: #000000;
 }
 
 .toast-message {
