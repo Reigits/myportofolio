@@ -79,6 +79,16 @@
         gridContainer.classList.toggle('hide', !showGrid);
     }
 
+    // Mengubah karakter khusus HTML menjadi entity agar ditampilkan sebagai teks
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#39;');
+    }
+
     // Membuat elemen card project
     function buildProjectCardElement(item) {
         const project = item.fields;
@@ -88,11 +98,11 @@
         articleElement.className = 'experience-card';
 
         const imageHtml = project.project_image_url 
-            ? `<img src="${project.project_image_url}" alt="Gambar ${project.title}" class="project-image">`
+            ? `<img src="${escapeHtml(project.project_image_url)}" alt="Gambar ${escapeHtml(project.title)}" class="project-image">`
             : '';
 
         const urlHtml = project.project_url 
-            ? `<a href="${project.project_url}" class="button">Lihat Project</a>`
+            ? `<a href="${escapeHtml(project.project_url)}" class="button">Lihat Project</a>`
             : '';
 
         // Dummy UUID digunakan untuk digantikan oleh ID asli dari data JSON
@@ -111,15 +121,15 @@
         const isStarredClass = project.is_starred ? " is-starred" : "";
         const starText = project.is_starred ? "Unstar" : "Star";
         const starTitle = project.star_count > 0 
-            ? `Dibintangi oleh ${project.starred_by_names}` 
+            ? `Dibintangi oleh ${escapeHtml(project.starred_by_names)}` 
             : "Jadilah yang pertama memberi star";
 
         // Komponen card
         const completeCardHtml = `
             ${imageHtml}
-            <h2>${project.title}</h2>
-            <span class="experience-category">${project.tech_stack}</span>
-            <p class="experience-description">${project.description}</p>
+            <h2>${escapeHtml(project.title)}</h2>
+            <span class="experience-category">${escapeHtml(project.tech_stack)}</span>
+            <p class="experience-description">${escapeHtml(project.description)}</p>
             <div class="project-card-actions">
                 <div class="project-actions">
                     ${urlHtml}
