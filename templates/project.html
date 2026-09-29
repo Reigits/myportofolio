@@ -58,6 +58,10 @@
     const searchForm = document.getElementById('project-search-form');
     const searchInput = document.getElementById('search-input');
 
+    // timer debouncer
+    const SEARCH_DEBOUNCE_DELAY = 300;
+    let searchDebounceTimer;
+
     // Menyembunyikan/Menampilkan section halaman
     function displayPageSection({ showLoading = false, showError = false, showEmpty = false, showGrid = false }) {
         loadingState.classList.toggle('hide', !showLoading);
