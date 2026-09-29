@@ -10,13 +10,11 @@
                 <div class="project-header">
                     <h1>Projects</h1>
                     {% if user.is_superuser %}
-
                     <button type="button"
-                            class="button small"
-                            popovertarget="add-project"
-                            aria-label="Tambah Proyek"
-                            title="Tambah proyek">
-                        + Tambah Proyek
+                            class="button project-add-button"
+                            popovertarget="add-project-modal">
+                        <span aria-hidden="true">+</span>
+                        Tambah Proyek
                     </button>
                     {% endif %}
                 </div>
@@ -147,6 +145,10 @@
     }
 
     // Fetch data project
+    function closeProjectModal() {
+        document.getElementById("add-project-modal").hidePopover();
+    }
+
     async function fetchProjects(searchQuery = "") {
         if (projectsAbortController) projectsAbortController.abort();
         projectsAbortController = new AbortController();

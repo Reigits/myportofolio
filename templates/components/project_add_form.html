@@ -1,18 +1,26 @@
-<div id="add-project"
-    class="popover-modal"
+<div id="add-project-modal"
+     class="project-form-modal"
      popover="auto"
      role="dialog"
      aria-modal="true"
-     aria-labelledby="add-project-title">
+     aria-labelledby="add-project-modal-title">
     <button type="button"
-            class="popover-modal__backdrop"
-            popovertarget="add-project"
+            class="project-form-modal__backdrop"
+            popovertarget="add-project-modal"
             popovertargetaction="hide"
-            aria-label="Tutup konfirmasi tambah"></button>
-    <div class="popover-modal__content">
-        <h1>Add New Projects</h1>
-        <form method="post"
-              action="{% url 'main:show_projects' %}"
+            aria-label="Tutup form tambah proyek"></button>
+
+    <div class="project-form-modal__content">
+        <button type="button"
+                class="project-form-modal__close"
+                popovertarget="add-project-modal"
+                popovertargetaction="hide"
+                aria-label="Tutup form tambah proyek">×</button>
+
+        <h2 id="add-project-modal-title">Tambah Proyek Baru</h2>
+        <form id="project-form"
+              method="post"
+              action="{% url 'main:create_project' %}"
               class="project-form">
             {% csrf_token %}
             {% for field in form %}
@@ -24,13 +32,13 @@
                     {% endfor %}
                 </div>
             {% endfor %}
-            <button type="submit" class="button">Tambah Project</button>
-            <button type="button" 
-                    class="button button-secondary" 
-                    popovertarget="add-project" 
-                    popovertargetaction="hide">
-                Batal
-            </button>
+            <div class="project-form-modal__actions">
+                <button type="button"
+                        class="button button-secondary"
+                        popovertarget="add-project-modal"
+                        popovertargetaction="hide">Batal</button>
+                <button type="submit" class="button">Tambah Proyek</button>
+            </div>
         </form>
     </div>
 </div>
