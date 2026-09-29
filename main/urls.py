@@ -9,6 +9,7 @@ urlpatterns = [
     path("experience/", experience_view, name="show_experience"),
     path("projects/", project_view , name="show_projects"),
     path("projects/create/", create_project, name="create_project"),
+    path("projects/add-ajax/", create_project_ajax, name="create_project_ajax"),
     path("api/projects/", get_projects_json, name="get_projects_json"),
     path("edu/<uuid:edu_id>/delete/", delete_edu, name="delete_edu"),
     path("hobby/<uuid:hobby_id>/delete/", delete_hobby, name="delete_hobby"),
