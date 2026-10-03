@@ -4,6 +4,13 @@
             <div class="title-button-header">
                 <h1 class="eduhobby-title">My Education</h1>
                 {% if user.is_superuser %}
+                    <button type="button"
+                            class="button small"
+                            popovertarget="add-education"
+                            aria-label="Tambah Pendidikan"
+                            title="Tambah Pendidikan">
+                        + Tambah Pendidikan
+                    </button>
                     {% include 'components/edu_add_form.html' %}
                 {% endif %}
             </div>
@@ -35,6 +42,13 @@
             <div class="title-button-header"> 
                 <h1 class="eduhobby-title">My Hobby</h1>
                 {% if user.is_superuser %}
+                    <button type="button"
+                            class="button small"
+                            popovertarget="add-hobby"
+                            aria-label="Tambah Hobi"
+                            title="Tambah Hobi">
+                        + Tambah Hobi
+                    </button>
                     {% include 'components/hobby_add_form.html' %}
                 {% endif %}
             </div>

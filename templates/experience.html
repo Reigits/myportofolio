@@ -8,6 +8,13 @@
             <div class="project-header">
                 <h1>Experience</h1>
                 {% if user.is_superuser %}
+                    <button type="button"
+                            class="button small"
+                            popovertarget="add-experience"
+                            aria-label="Tambah Pengalaman"
+                            title="Tambah Pengalaman">
+                        + Tambah Pengalaman
+                    </button>
                     {% include 'components/experience_add_form.html' %}
                 {% endif %}
             </div>
