@@ -107,7 +107,7 @@ def show_experience(request):
     }
     return render(request, "experience.html", context)
 
-def get_experience_json(request):
+def get_experiences_json(request):
     title_query = request.GET.get("title", "").strip()
     experiences = Experience.objects.prefetch_related('starred_by').all()
 
