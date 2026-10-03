@@ -109,7 +109,7 @@ def show_experience(request):
 
 def get_experiences_json(request):
     title_query = request.GET.get("title", "").strip()
-    experiences = Experience.objects.prefetch_related('starred_by').all()
+    experiences = Experience.objects.all()
 
     if title_query:
         experiences = experiences.filter(title__icontains=title_query)
@@ -118,12 +118,12 @@ def get_experiences_json(request):
     data = []
     for exp in experiences:
         data.append({
-            "pk": str(experiences.id),
+            "pk": str(exp.id),
             "fields": {
-                "title": experiences.title,
-                "description": experiences.description,
-                "category": experiences.category,
-                "is_ongoing": experiences.is_ongoing
+                "title": exp.title,
+                "description": exp.description,
+                "category": exp.category,
+                "is_ongoing": exp.is_ongoing
             }
         })
 
