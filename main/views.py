@@ -85,7 +85,7 @@ def get_hobby_json(request):
 
     return JsonResponse(data, safe=False)
 
-def show_projects(request):
+def show_project(request):
     title_query = request.GET.get("title", "").strip()
 
     context = {
@@ -129,7 +129,7 @@ def get_projects_json(request):
 def project_view(request):
     if request.method == "POST":
         return create_project(request)
-    return show_projects(request)
+    return show_project(request)
 
 def show_experience(request):
     context = {
@@ -217,7 +217,7 @@ def toggle_star(request, project_id):
         else:
             project.starred_by.add(request.user)
 
-    return redirect("main:show_projects")
+    return redirect("main:show_project")
 
 # METHOD MEMBUAT FORM
 
@@ -295,7 +295,7 @@ def create_project(request):
         "name": "Ahmad Rafa Robyan",
         "form": form,
     }
-    return redirect("main:show_projects")
+    return redirect("main:show_project")
 
 @require_POST
 def create_project_ajax(request):
@@ -363,7 +363,7 @@ def delete_project(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
     project.delete()
     messages.success(request, "Project berhasil dihapus!")
-    return redirect("main:show_projects")
+    return redirect("main:show_project")
 
 # METHOD EDIT FORM
 
@@ -407,7 +407,7 @@ def edit_project(request, project_id):
     if form.is_valid():
         form.save()
         messages.success(request, f"Proyek '{project.title}' berhasil diperbarui!")
-    return redirect("main:show_projects")
+    return redirect("main:show_project")
 
 @login_required(login_url="/login/")
 @require_POST

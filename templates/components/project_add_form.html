@@ -20,7 +20,7 @@
         <h2 id="add-project-modal-title">Tambah Proyek Baru</h2>
         <form id="project-form"
               method="post"
-              action="{% url 'main:create_project' %}"
+              action="{% url 'main:show_project' %}"
               class="project-form">
             {% csrf_token %}
             {% for field in form %}
