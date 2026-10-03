@@ -114,7 +114,6 @@ def get_experiences_json(request):
     if title_query:
         experiences = experiences.filter(title__icontains=title_query)
 
-    # Konstruksi data JSON secara manual agar bisa menyisipkan logika Star
     data = []
     for exp in experiences:
         data.append({
