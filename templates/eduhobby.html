@@ -11,7 +11,7 @@
                             title="Tambah Pendidikan">
                         + Tambah Pendidikan
                     </button>
-                    {% include 'components/edu_add_form.html' %}
+                    {% include 'components/add_form.html' with action_url="/"  modal_id="add-education"  model_name="pendidikan"  model_title="Pendidikan"  target_form=edu_form form_type="education" %}
                 {% endif %}
             </div>
             <div class="content-collumn">
@@ -49,7 +49,7 @@
                             title="Tambah Hobi">
                         + Tambah Hobi
                     </button>
-                    {% include 'components/hobby_add_form.html' %}
+                    {% include 'components/add_form.html' with action_url="/"  modal_id="add-hobby"  model_name="hobby"  model_title="Hobi"  target_form=hobby_form form_type="hobby" %}
                 {% endif %}
             </div>
 

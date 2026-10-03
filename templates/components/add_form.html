@@ -1,24 +1,27 @@
-<div id="add-experience"
+<div id="{{modal_id}}"
      class="popover-modal"
      popover="auto"
      role="dialog"
      aria-modal="true"
-     aria-labelledby="add-experience-title">
+     aria-labelledby="add-{{model_name}}-title">
     <button type="button"
             class="popover-modal__backdrop"
-            popovertarget="add-experience"
+            popovertarget="{{modal_id}}"
             popovertargetaction="hide"
-            aria-label="Tutup form tambah pengalaman"></button>
+            aria-label="Tutup form tambah {{model_name}}"></button>
     <div class="popover-modal__content">
         <button type="button"
                 class="popover-modal__close"
-                popovertarget="add-experience"
+                popovertarget="{{modal_id}}"
                 popovertargetaction="hide"
-                aria-label="Tutup form tambah pengalaman"></button>
-        <h1 id="add-experience-title">Tambah Pengalaman Baru</h1>
-        <form method="post" action="{% url 'main:show_experience' %}" class="project-form">
+                aria-label="Tutup form tambah {{model_name}}"></button>
+        <h1 id="add-{{model_name}}-title">Tambah {{model_title}}</h1>
+        <form method="post" action="{{action_url}}" class="project-form">
             {% csrf_token %}
-            {% for field in experience_form %}
+            {% if form_type %}
+            <input type="hidden" name="form_type" value="{{form_type}}">
+            {% endif %}
+            {% for field in target_form %}
                 <div class="form-group">
                     <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                     {{ field }}
@@ -30,12 +33,12 @@
             <div class="popover-modal__actions">
                 <button type="button"
                         class="button button-secondary"
-                        popovertarget="add-experience"
+                        popovertarget="{{modal_id}}"
                         popovertargetaction="hide">
                     Batal
                 </button>
-                <button type="submit" class="button">Tambah Pengalaman</button>
+                <button type="submit" class="button">Tambah {{model_title}}</button>
             </div>
         </form>
-    </div>
+</div>
 </div>

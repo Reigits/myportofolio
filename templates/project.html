@@ -12,10 +12,11 @@
                     {% if user.is_superuser %}
                     <button type="button"
                             class="button project-add-button"
-                            popovertarget="add-project-modal">
+                            popovertarget="add-project">
                         <span aria-hidden="true">+</span>
                         Tambah Proyek
                     </button>
+                    {% include 'components/add_form.html' with action_url="/project/"  modal_id="add-project"  model_name="project"  model_title="Projek"  target_form=project_form %}
                     {% endif %}
                 </div>
                 <form id="project-search-form" class="project-search">
@@ -48,11 +49,6 @@
             </div>
         </section>
     </main>
-
-    {% if user.is_superuser %}
-        {% include 'components/project_add_form.html' %}
-    {% endif %}
-
     <script>
     // Konfigurasi
     const BASE_PROJECTS_ENDPOINT = "{% url 'main:get_projects_json' %}";

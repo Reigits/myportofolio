@@ -15,7 +15,7 @@
                             title="Tambah Pengalaman">
                         + Tambah Pengalaman
                     </button>
-                    {% include 'components/experience_add_form.html' %}
+                    {% include 'components/add_form.html' with action_url="/experience/"  modal_id="add-experience"  model_name="experience"  model_title="Pengalaman"  target_form=experience_form %}
                 {% endif %}
             </div>
 
