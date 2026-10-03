@@ -107,6 +107,28 @@ def show_experience(request):
     }
     return render(request, "experience.html", context)
 
+def get_experience_json(request):
+    title_query = request.GET.get("title", "").strip()
+    experiences = Experience.objects.prefetch_related('starred_by').all()
+
+    if title_query:
+        experiences = experiences.filter(title__icontains=title_query)
+
+    # Konstruksi data JSON secara manual agar bisa menyisipkan logika Star
+    data = []
+    for exp in experiences:
+        data.append({
+            "pk": str(experiences.id),
+            "fields": {
+                "title": experiences.title,
+                "description": experiences.description,
+                "category": experiences.category,
+                "is_ongoing": experiences.is_ongoing
+            }
+        })
+
+    return JsonResponse(data, safe=False)
+
 def experience_view(request):
     if request.method == "POST":
         return create_experience(request)
