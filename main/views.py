@@ -53,6 +53,38 @@ def show_main(request):
     }
     return render(request, "index.html", context)
 
+# json endpoint buat edu ama hobby
+def get_education_json(request):
+    education_list = Education.objects.all()
+
+    data = []
+    for edu in education_list:
+        data.append({
+            "pk": str(edu.id),
+            "fields": {
+                "title": edu.title,
+                "started_at": edu.started_at,
+                "ended_at": edu.ended_at,
+                "is_ongoing": edu.is_ongoing,
+            }
+        })
+
+    return JsonResponse(data, safe=False)
+
+def get_hobby_json(request):
+    hobby_list = Hobby.objects.all()
+
+    data = []
+    for hobby in hobby_list:
+        data.append({
+            "pk": str(hobby.id),
+            "fields": {
+                "title": hobby.title,
+            }
+        })
+
+    return JsonResponse(data, safe=False)
+
 def show_projects(request):
     title_query = request.GET.get("title", "").strip()
 
