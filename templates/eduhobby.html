@@ -29,6 +29,13 @@
                     <div class="action-row">
                         {% include 'components/edu_edit_form.html' %}
                         {% include 'components/edu_delete_modal.html' %}
+                        <button type="button"
+                                class="button button-danger small"
+                                popovertarget="delete-edu-{{ edu.id }}"
+                                aria-label="Hapus {{ edu.title }}"
+                                title="Hapus edukasi">
+                            Hapus Edukasi
+                        </button>
                     </div>
                     {% endif %}
                 </div>
@@ -62,6 +69,13 @@
                         <div class="action-row">
                             {% include 'components/hobby_edit_form.html' %}
                             {% include 'components/hobby_delete_modal.html' %}
+                            <button type="button"
+                                    class="button button-danger small"
+                                    popovertarget="delete-hobby-{{ hobby.id }}"
+                                    aria-label="Hapus {{ hobby.title }}"
+                                    title="Hapus hobby">
+                                Hapus Hobby
+                            </button>
                         </div>
                         {% endif %}
                     </div>

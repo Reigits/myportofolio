@@ -39,6 +39,13 @@
                         {% if user.is_superuser %}
                             {% include 'components/experience_edit_form.html' %}
                             {% include 'components/experience_delete_modal.html' %}
+                            <button type="button"
+                                    class="button button-danger small"
+                                    popovertarget="delete-experience-{{ experience.id }}"
+                                    aria-label="Hapus {{ experience.title }}"
+                                    title="Hapus pengalaman">
+                                Hapus Pengalaman
+                            </button>
                         {% endif %}
                         </div>
                     </article>
