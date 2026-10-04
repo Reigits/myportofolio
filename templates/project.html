@@ -152,11 +152,11 @@
 
     // Fetch data project
     function closeProjectModal() {
-        document.getElementById("add-project-modal").hidePopover();
+        document.getElementById("add-project").hidePopover();
     }
 
     const CREATE_PROJECT_ENDPOINT = "{% url 'main:create_project_ajax' %}";
-    const projectForm = document.getElementById('project-form');
+    const projectForm = document.querySelector('#add-project form');
 
     // Membaca nilai cookie, digunakan untuk mengambil token CSRF
     function getCookie(name) {
