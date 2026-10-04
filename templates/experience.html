@@ -46,6 +46,15 @@ const IS_SUPERUSER = "{{ user.is_superuser|yesno:'true,false' }}" === "true";
 const CREATE_EXPERIENCE_ENDPOINT = "{% url 'main:create_experience_ajax' %}";
 let experienceAbortController;
 
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+}
+
 const loadingState = document.getElementById('experience-loading');
 const errorState = document.getElementById('experience-error');
 const emptyState = document.getElementById('experience-empty');
@@ -79,10 +88,10 @@ function buildExperienceCardElement(item) {
         : '';
 
     const completeCardHtml = `
-        <span class="experience-category">${categoryDisplay}</span>
-        <h2>${exp.title}</h2>
-        <p class="experience-description">${exp.description}</p>
-        <p class="experience-status">${statusText}</p>
+        <span class="experience-category">${escapeHtml(categoryDisplay)}</span>
+        <h2>${escapeHtml(exp.title)}</h2>
+        <p class="experience-description">${escapeHtml(exp.description)}</p>
+        <p class="experience-status">${escapeHtml(statusText)}</p>
         <div class="project-actions">
             ${deleteHtml}
         </div>
