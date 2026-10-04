@@ -240,6 +240,24 @@ def create_edu(request):
     }
     return redirect("main:show_main_edu")
 
+@require_POST
+def create_edu_ajax(request):
+    if not request.user.is_superuser:
+        return JsonResponse(
+            {"message": "Hanya pemilik portofolio yang dapat menambahkan pendidikan."},
+            status=403,
+        )
+
+    form = EduForm(request.POST)
+    if form.is_valid():
+        edu = form.save()
+        return JsonResponse(
+            {"message": "Proyek berhasil ditambahkan.", "pk": str(edu.id)},
+            status=201,
+        )
+
+    return JsonResponse({"errors": form.errors.get_json_data()}, status=400)
+
 @login_required(login_url="/login/")
 @require_POST
 def create_hobby(request):
@@ -259,6 +277,24 @@ def create_hobby(request):
     }
     return redirect("main:show_main_hobby")
 
+@require_POST
+def create_hobby_ajax(request):
+    if not request.user.is_superuser:
+        return JsonResponse(
+            {"message": "Hanya pemilik portofolio yang dapat menambahkan hobi."},
+            status=403,
+        )
+
+    form = HobbyForm(request.POST)
+    if form.is_valid():
+        hobby = form.save()
+        return JsonResponse(
+            {"message": "Proyek berhasil ditambahkan.", "pk": str(hobby.id)},
+            status=201,
+        )
+
+    return JsonResponse({"errors": form.errors.get_json_data()}, status=400)
+
 @login_required(login_url="/login/")
 @require_POST
 def create_experience(request):
@@ -277,6 +313,24 @@ def create_experience(request):
         "form": form,
     }
     return redirect("main:show_experience")
+
+@require_POST
+def create_experience_ajax(request):
+    if not request.user.is_superuser:
+        return JsonResponse(
+            {"message": "Hanya pemilik portofolio yang dapat menambahkan pengalaman."},
+            status=403,
+        )
+
+    form = ExperienceForm(request.POST)
+    if form.is_valid():
+        experience = form.save()
+        return JsonResponse(
+            {"message": "Proyek berhasil ditambahkan.", "pk": str(experience.id)},
+            status=201,
+        )
+
+    return JsonResponse({"errors": form.errors.get_json_data()}, status=400)
 
 @login_required(login_url="/login/")
 @require_POST
