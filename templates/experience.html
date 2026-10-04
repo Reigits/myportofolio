@@ -15,48 +15,114 @@
                             title="Tambah Pengalaman">
                         + Tambah Pengalaman
                     </button>
-                    {% include 'components/add_form.html' with action_url="/experience/"  modal_id="add-experience"  model_name="experience"  model_title="Pengalaman"  target_form=experience_form %}
+                    {% include 'components/add_form.html' with action_url="/experience/" modal_id="add-experience" model_name="experience" model_title="Pengalaman" target_form=experience_form %}
                 {% endif %}
             </div>
 
-            <div class="experience-grid">
-                {% for experience in experience_list %}
-                    <article class="experience-card">
-                        <span class="experience-category">
-                            {{ experience.get_category_display }}
-                        </span>
-                        <h2>{{ experience.title }}</h2>
-                        <p class="experience-description">
-                            {{ experience.description }}
-                        </p>
-
-                        {% if experience.is_ongoing %}
-                            <p class="experience-status">Sedang berlangsung</p>
-                        {% else %}
-                            <p class="experience-status">Selesai</p>
-                        {% endif %}
-                        <div class="project-actions">
-                        {% if user.is_superuser %}
-                            {% include 'components/experience_edit_form.html' %}
-                            {% include 'components/experience_delete_modal.html' %}
-                            <button type="button"
-                                    class="button button-danger small"
-                                    popovertarget="delete-experience-{{ experience.id }}"
-                                    aria-label="Hapus {{ experience.title }}"
-                                    title="Hapus pengalaman">
-                                Hapus Pengalaman
-                            </button>
-                        {% endif %}
-                        </div>
-                    </article>
-                {% empty %}
-                    <p class="empty-state">
-                        Belum ada pengalaman yang ditambahkan.
-                    </p>
-                {% endfor %}
+            <!-- Loading State -->
+            <div id="experience-loading" class="empty-state hide">
+                <p>Memuat pengalaman...</p>
             </div>
+
+            <!-- Error State -->
+            <div id="experience-error" class="empty-state hide">
+                <p>Gagal memuat data pengalaman. Silakan coba lagi.</p>
+            </div>
+
+            <!-- Empty State -->
+            <div id="experience-empty" class="empty-state hide">
+                <p>Belum ada pengalaman yang ditambahkan.</p>
+            </div>
+
+            <!-- Experience Grid -->
+            <div id="experience-grid" class="experience-grid hide"></div>
         </div>
     </section>
 </main>
 
+<script>
+const BASE_EXPERIENCE_ENDPOINT = "{% url 'main:get_experiences_json' %}";
+const IS_SUPERUSER = "{{ user.is_superuser|yesno:'true,false' }}" === "true";
+let experienceAbortController;
+
+const loadingState = document.getElementById('experience-loading');
+const errorState = document.getElementById('experience-error');
+const emptyState = document.getElementById('experience-empty');
+const gridContainer = document.getElementById('experience-grid');
+
+function displayPageSection({ showLoading = false, showError = false, showEmpty = false, showGrid = false }) {
+    loadingState.classList.toggle('hide', !showLoading);
+    errorState.classList.toggle('hide', !showError);
+    emptyState.classList.toggle('hide', !showEmpty);
+    gridContainer.classList.toggle('hide', !showGrid);
+}
+
+function buildExperienceCardElement(item) {
+    const exp = item.fields;
+    const expId = item.pk;
+
+    const articleElement = document.createElement('article');
+    articleElement.className = 'experience-card';
+
+    const statusText = exp.is_ongoing ? 'Sedang berlangsung' : 'Selesai';
+    const categoryDisplay = exp.category_display || exp.category;
+
+    const deleteUrl = "{% url 'main:delete_experience' '00000000-0000-0000-0000-000000000000' %}"
+        .replace('00000000-0000-0000-0000-000000000000', expId);
+
+    const deleteHtml = IS_SUPERUSER
+        ? `<form method="post" action="${deleteUrl}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="button button-danger small" onclick="return confirm('Yakin ingin menghapus pengalaman ini?');">Hapus Pengalaman</button>
+        </form>`
+        : '';
+
+    const completeCardHtml = `
+        <span class="experience-category">${categoryDisplay}</span>
+        <h2>${exp.title}</h2>
+        <p class="experience-description">${exp.description}</p>
+        <p class="experience-status">${statusText}</p>
+        <div class="project-actions">
+            ${deleteHtml}
+        </div>
+    `;
+
+    articleElement.innerHTML = completeCardHtml;
+    return articleElement;
+}
+
+async function fetchExperiences() {
+    if (experienceAbortController) experienceAbortController.abort();
+    experienceAbortController = new AbortController();
+
+    try {
+        displayPageSection({ showLoading: true });
+
+        const response = await fetch(BASE_EXPERIENCE_ENDPOINT, {
+            headers: { 'Accept': 'application/json' },
+            signal: experienceAbortController.signal,
+        });
+
+        if (!response.ok) throw new Error('Failed to fetch data');
+
+        const experienceData = await response.json();
+
+        if (experienceData.length === 0) {
+            displayPageSection({ showEmpty: true });
+        } else {
+            gridContainer.innerHTML = '';
+            experienceData.forEach(item => {
+                gridContainer.appendChild(buildExperienceCardElement(item));
+            });
+            displayPageSection({ showGrid: true });
+        }
+    } catch (error) {
+        if (error.name === 'AbortError') return;
+        console.error('Error loading experiences:', error);
+        displayPageSection({ showError: true });
+    }
+}
+
+fetchExperiences();
+</script>
 {% endblock %}
