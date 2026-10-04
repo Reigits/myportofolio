@@ -1,5 +1,6 @@
 <section class="education">
     <div class="eduhobby-container">
+        <!-- Education Column -->
         <div class="content-collumn">
             <div class="title-button-header">
                 <h1 class="eduhobby-title">My Education</h1>
@@ -11,40 +12,20 @@
                             title="Tambah Pendidikan">
                         + Tambah Pendidikan
                     </button>
-                    {% include 'components/add_form.html' with action_url="/"  modal_id="add-education"  model_name="pendidikan"  model_title="Pendidikan"  target_form=edu_form form_type="education" %}
+                    {% include 'components/add_form.html' with action_url="/" modal_id="add-education" model_name="pendidikan" model_title="Pendidikan" target_form=edu_form form_type="education" %}
                 {% endif %}
             </div>
-            <div class="content-collumn">
-                {% for edu in education_list %}
-                <div class="content-row">
-                    <dt>
-                        &middot; {{ edu.title }} ({{ edu.started_at }} -
-                        {% if edu.is_ongoing %}
-                        Sekarang)
-                        {% else %}
-                        {{ edu.ended_at }})
-                        {% endif %}
-                    </dt>
-                    {% if user.is_superuser %}
-                    <div class="action-row">
-                        {% include 'components/edu_edit_form.html' %}
-                        {% include 'components/edu_delete_modal.html' %}
-                        <button type="button"
-                                class="button button-danger small"
-                                popovertarget="delete-edu-{{ edu.id }}"
-                                aria-label="Hapus {{ edu.title }}"
-                                title="Hapus edukasi">
-                            Hapus Edukasi
-                        </button>
-                    </div>
-                    {% endif %}
-                </div>
-                    {% empty %}
-                        <dt>Belom ada data yang ditambah...</dt>
-                {% endfor %}
-            </div>
+
+            <!-- Education States -->
+            <div id="edu-loading" class="empty-state hide"><p>Memuat pendidikan...</p></div>
+            <div id="edu-error" class="empty-state hide"><p>Gagal memuat data pendidikan.</p></div>
+            <div id="edu-empty" class="empty-state hide"><dt>Belum ada data yang ditambah...</dt></div>
+
+            <!-- Education List Container -->
+            <div id="edu-list" class="content-collumn hide"></div>
         </div>
 
+        <!-- Hobby Column -->
         <div class="content-collumn">
             <div class="title-button-header"> 
                 <h1 class="eduhobby-title">My Hobby</h1>
@@ -56,33 +37,279 @@
                             title="Tambah Hobi">
                         + Tambah Hobi
                     </button>
-                    {% include 'components/add_form.html' with action_url="/"  modal_id="add-hobby"  model_name="hobby"  model_title="Hobi"  target_form=hobby_form form_type="hobby" %}
+                    {% include 'components/add_form.html' with action_url="/" modal_id="add-hobby" model_name="hobby" model_title="Hobi" target_form=hobby_form form_type="hobby" %}
                 {% endif %}
             </div>
 
-            <div class="content-collumn">
-                {% for hobby in hobby_list %}
-                    <div class="content-row">
-                        <dt>
-                            &middot; {{ hobby.title }} </dt>
-                        {% if user.is_superuser %}
-                        <div class="action-row">
-                            {% include 'components/hobby_edit_form.html' %}
-                            {% include 'components/hobby_delete_modal.html' %}
-                            <button type="button"
-                                    class="button button-danger small"
-                                    popovertarget="delete-hobby-{{ hobby.id }}"
-                                    aria-label="Hapus {{ hobby.title }}"
-                                    title="Hapus hobby">
-                                Hapus Hobby
-                            </button>
-                        </div>
-                        {% endif %}
-                    </div>
-                    {% empty %}
-                    <dt style="padding-left:0.5rem;">Belom ada data yang ditambah...</dt>
-                {% endfor %}
-            </div>
+            <!-- Hobby States -->
+            <div id="hobby-loading" class="empty-state hide"><p>Memuat hobi...</p></div>
+            <div id="hobby-error" class="empty-state hide"><p>Gagal memuat data hobi.</p></div>
+            <div id="hobby-empty" class="empty-state hide"><dt style="padding-left:0.5rem;">Belum ada data yang ditambah...</dt></div>
+
+            <!-- Hobby List Container -->
+            <div id="hobby-list" class="content-collumn hide"></div>
         </div>
     </div>
 </section>
+
+<script>
+// Konfigurasi
+const BASE_EDUCATION_ENDPOINT = "{% url 'main:get_education_json' %}";
+const BASE_HOBBY_ENDPOINT = "{% url 'main:get_hobby_json' %}";
+const IS_SUPERUSER = "{{ user.is_superuser|yesno:'true,false' }}" === "true";
+const CREATE_EDUCATION_ENDPOINT = "{% url 'main:create_edu_ajax' %}";
+const CREATE_HOBBY_ENDPOINT = "{% url 'main:create_hobby_ajax' %}";
+
+let eduAbortController;
+let hobbyAbortController;
+
+// DOM Edukasi
+const eduLoading = document.getElementById('edu-loading');
+const eduError = document.getElementById('edu-error');
+const eduEmpty = document.getElementById('edu-empty');
+const eduList = document.getElementById('edu-list');
+
+// DOM Hobi
+const hobbyLoading = document.getElementById('hobby-loading');
+const hobbyError = document.getElementById('hobby-error');
+const hobbyEmpty = document.getElementById('hobby-empty');
+const hobbyList = document.getElementById('hobby-list');
+
+// Toggle State Helper
+function displaySection(elements, { showLoading = false, showError = false, showEmpty = false, showList = false }) {
+    elements.loading.classList.toggle('hide', !showLoading);
+    elements.error.classList.toggle('hide', !showError);
+    elements.empty.classList.toggle('hide', !showEmpty);
+    elements.list.classList.toggle('hide', !showList);
+}
+
+// Builder Row Edukasi
+function buildEducationRowElement(item) {
+    const edu = item.fields;
+    const eduId = item.pk;
+
+    const row = document.createElement('div');
+    row.className = 'content-row';
+
+    const endYearText = edu.is_ongoing ? 'Sekarang' : edu.ended_at;
+
+    const deleteUrl = "{% url 'main:delete_edu' '00000000-0000-0000-0000-000000000000' %}"
+        .replace('00000000-0000-0000-0000-000000000000', eduId);
+
+    const actionsHtml = IS_SUPERUSER
+        ? `<div class="action-row">
+            <form method="post" action="${deleteUrl}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="button button-danger small" onclick="return confirm('Hapus edukasi ini?');">Hapus Edukasi</button>
+            </form>
+        </div>`
+        : '';
+
+    row.innerHTML = `
+        <dt>&middot; ${edu.title} (${edu.started_at} - ${endYearText})</dt>
+        ${actionsHtml}
+    `;
+
+    return row;
+}
+
+// Builder Row Hobi
+function buildHobbyRowElement(item) {
+    const hobby = item.fields;
+    const hobbyId = item.pk;
+
+    const row = document.createElement('div');
+    row.className = 'content-row';
+
+    const deleteUrl = "{% url 'main:delete_hobby' '00000000-0000-0000-0000-000000000000' %}"
+        .replace('00000000-0000-0000-0000-000000000000', hobbyId);
+
+    const actionsHtml = IS_SUPERUSER
+        ? `<div class="action-row">
+            <form method="post" action="${deleteUrl}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="button button-danger small" onclick="return confirm('Hapus hobi ini?');">Hapus Hobby</button>
+            </form>
+        </div>`
+        : '';
+
+    row.innerHTML = `
+        <dt>&middot; ${hobby.title}</dt>
+        ${actionsHtml}
+    `;
+
+    return row;
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+const eduModal = document.getElementById('add-education');
+const eduForm = document.querySelector('#add-education form');
+
+const hobbyModal = document.getElementById('add-hobby');
+const hobbyForm = document.querySelector('#add-hobby form');
+
+function closeEduModal() {
+    if (eduModal && typeof eduModal.hidePopover === 'function') eduModal.hidePopover();
+}
+
+function closeHobbyModal() {
+    if (hobbyModal && typeof hobbyModal.hidePopover === 'function') hobbyModal.hidePopover();
+}
+
+async function addEducation(event) {
+    event.preventDefault();
+
+    const submitButton = eduForm.querySelector('button[type="submit"]');
+    submitButton.disabled = true;
+
+    try {
+        const response = await fetch(CREATE_EDUCATION_ENDPOINT, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCookie('csrftoken') },
+            body: new FormData(eduForm),
+        });
+        const result = await response.json().catch(() => ({}));
+
+        if (response.ok) {
+            eduForm.reset();
+            closeEduModal();
+            showToast('Berhasil', 'Pendidikan berhasil ditambahkan!', 'success');
+            fetchEducations();
+        } else {
+            const errorMessages = result.errors
+                ? Object.values(result.errors).flat().map(error => error.message)
+                : [result.message || `Terjadi kesalahan (status ${response.status}).`];
+            showToast('Gagal menambahkan pendidikan', errorMessages.join(' '), 'error');
+        }
+    } catch (error) {
+        console.error('Error adding education:', error);
+        showToast('Gagal menambahkan pendidikan', 'Tidak dapat terhubung ke server. Silakan coba lagi.', 'error');
+    } finally {
+        submitButton.disabled = false;
+    }
+}
+
+async function addHobby(event) {
+    event.preventDefault();
+
+    const submitButton = hobbyForm.querySelector('button[type="submit"]');
+    submitButton.disabled = true;
+
+    try {
+        const response = await fetch(CREATE_HOBBY_ENDPOINT, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCookie('csrftoken') },
+            body: new FormData(hobbyForm),
+        });
+        const result = await response.json().catch(() => ({}));
+
+        if (response.ok) {
+            hobbyForm.reset();
+            closeHobbyModal();
+            showToast('Berhasil', 'Hobi berhasil ditambahkan!', 'success');
+            fetchHobbies();
+        } else {
+            const errorMessages = result.errors
+                ? Object.values(result.errors).flat().map(error => error.message)
+                : [result.message || `Terjadi kesalahan (status ${response.status}).`];
+            showToast('Gagal menambahkan hobi', errorMessages.join(' '), 'error');
+        }
+    } catch (error) {
+        console.error('Error adding hobby:', error);
+        showToast('Gagal menambahkan hobi', 'Tidak dapat terhubung ke server. Silakan coba lagi.', 'error');
+    } finally {
+        submitButton.disabled = false;
+    }
+}
+
+if (eduForm) {
+    eduForm.addEventListener('submit', addEducation);
+}
+
+if (hobbyForm) {
+    hobbyForm.addEventListener('submit', addHobby);
+}
+
+// Fetch Educations
+async function fetchEducations() {
+    if (eduAbortController) eduAbortController.abort();
+    eduAbortController = new AbortController();
+
+    const elements = { loading: eduLoading, error: eduError, empty: eduEmpty, list: eduList };
+
+    try {
+        displaySection(elements, { showLoading: true });
+
+        const response = await fetch(BASE_EDUCATION_ENDPOINT, {
+            headers: { 'Accept': 'application/json' },
+            signal: eduAbortController.signal,
+        });
+
+        if (!response.ok) throw new Error('Failed to fetch education');
+
+        const eduData = await response.json();
+
+        if (eduData.length === 0) {
+            displaySection(elements, { showEmpty: true });
+        } else {
+            eduList.innerHTML = '';
+            eduData.forEach(item => eduList.appendChild(buildEducationRowElement(item)));
+            displaySection(elements, { showList: true });
+        }
+    } catch (error) {
+        if (error.name === 'AbortError') return;
+        console.error('Error loading educations:', error);
+        displaySection(elements, { showError: true });
+    }
+}
+
+// Fetch Hobbies
+async function fetchHobbies() {
+    if (hobbyAbortController) hobbyAbortController.abort();
+    hobbyAbortController = new AbortController();
+
+    const elements = { loading: hobbyLoading, error: hobbyError, empty: hobbyEmpty, list: hobbyList };
+
+    try {
+        displaySection(elements, { showLoading: true });
+
+        const response = await fetch(BASE_HOBBY_ENDPOINT, {
+            headers: { 'Accept': 'application/json' },
+            signal: hobbyAbortController.signal,
+        });
+
+        if (!response.ok) throw new Error('Failed to fetch hobbies');
+
+        const hobbyData = await response.json();
+
+        if (hobbyData.length === 0) {
+            displaySection(elements, { showEmpty: true });
+        } else {
+            hobbyList.innerHTML = '';
+            hobbyData.forEach(item => hobbyList.appendChild(buildHobbyRowElement(item)));
+            displaySection(elements, { showList: true });
+        }
+    } catch (error) {
+        if (error.name === 'AbortError') return;
+        console.error('Error loading hobbies:', error);
+        displaySection(elements, { showError: true });
+    }
+}
+
+fetchEducations();
+fetchHobbies();
+</script>
