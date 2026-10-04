@@ -28,9 +28,11 @@ urlpatterns = [
     path("edu/add-ajax/", create_edu_ajax, name="create_edu_ajax"),
     path("edu/<uuid:edu_id>/delete/", delete_edu, name="delete_edu"),
     path("edu/<uuid:edu_id>/edit/", edit_edu, name="edit_edu"),
+    path("api/edu/", get_education_json, name="get_education_json"),
     path("hobby/add-ajax/", create_hobby_ajax, name="create_hobby_ajax"),
     path("hobby/<uuid:hobby_id>/delete/", delete_hobby, name="delete_hobby"),
     path("hobby/<uuid:hobby_id>/edit/", edit_hobby, name="edit_hobby"),
+    path("api/hobby/", get_hobby_json, name="get_hobby_json"),
 
     # user mechanism
     path("register/", register, name="register"),
