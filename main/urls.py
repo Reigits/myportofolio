@@ -19,15 +19,20 @@ urlpatterns = [
 
     # experience
     path("experience/", experience_view, name="show_experience"),
+    path("experience/add-ajax/", create_experience_ajax, name="create_experience_ajax"),
     path("experience/<uuid:experience_id>/edit/", edit_experience, name="edit_experience"),
     path("experience/<uuid:experience_id>/delete/", delete_experience, name="delete_experience"),
     path("api/experiences/", get_experiences_json, name="get_experiences_json"),
 
     # edu/hobby
+    path("edu/add-ajax/", create_edu_ajax, name="create_edu_ajax"),
     path("edu/<uuid:edu_id>/delete/", delete_edu, name="delete_edu"),
+    path("edu/<uuid:edu_id>/edit/", edit_edu, name="edit_edu"),
+    path("hobby/add-ajax/", create_hobby_ajax, name="create_hobby_ajax"),
     path("hobby/<uuid:hobby_id>/delete/", delete_hobby, name="delete_hobby"),
-    path("education/<uuid:edu_id>/edit/", edit_edu, name="edit_edu"),
     path("hobby/<uuid:hobby_id>/edit/", edit_hobby, name="edit_hobby"),
+
+    # user mechanism
     path("register/", register, name="register"),
     path("login/", login_user, name="login"),
     path("logout/", logout_user, name="logout"),
