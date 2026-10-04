@@ -63,6 +63,15 @@ const CREATE_HOBBY_ENDPOINT = "{% url 'main:create_hobby_ajax' %}";
 let eduAbortController;
 let hobbyAbortController;
 
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+}
+
 // DOM Edukasi
 const eduLoading = document.getElementById('edu-loading');
 const eduError = document.getElementById('edu-error');
@@ -106,7 +115,7 @@ function buildEducationRowElement(item) {
         : '';
 
     row.innerHTML = `
-        <dt>&middot; ${edu.title} (${edu.started_at} - ${endYearText})</dt>
+        <dt>&middot; ${escapeHtml(edu.title)} (${escapeHtml(edu.started_at)} - ${escapeHtml(endYearText)})</dt>
         ${actionsHtml}
     `;
 
@@ -134,7 +143,7 @@ function buildHobbyRowElement(item) {
         : '';
 
     row.innerHTML = `
-        <dt>&middot; ${hobby.title}</dt>
+        <dt>&middot; ${escapeHtml(hobby.title)}</dt>
         ${actionsHtml}
     `;
 
