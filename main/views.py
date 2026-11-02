@@ -87,11 +87,15 @@ def get_hobby_json(request):
 
 def show_project(request):
     title_query = request.GET.get("title", "").strip()
+    is_editor = request.user.is_authenticated and (
+        request.user.is_superuser or request.user.groups.filter(name="Editor").exists()
+    )
 
     context = {
         "name": "Ahmad Rafa Robyan",
         "title_query": title_query,
-        "project_form" : ProjectForm()
+        "project_form" : ProjectForm(),
+        "is_editor": is_editor,
     }
     return render(request, "project.html", context)
 
