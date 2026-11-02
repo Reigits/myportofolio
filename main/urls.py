@@ -16,6 +16,8 @@ urlpatterns = [
     "projects/<uuid:project_id>/star/",
     toggle_star,
     name="toggle_star"),
+
+    # RESTful API
     path("api/v1/", include("main.api_urls")),
     path("api-auth/", include("rest_framework.urls")),
 
