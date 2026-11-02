@@ -30,3 +30,26 @@ def project_list(request):
     serializer.is_valid(raise_exception=True)
     serializer.save()
     return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+@api_view(["GET", "HEAD", "PUT", "PATCH", "DELETE"])
+@authentication_classes([SessionAuthentication])
+@permission_classes([IsPortfolioOwnerOrReadOnly])
+def project_detail(request, project_id):
+    project = get_object_or_404(
+        Project.objects.prefetch_related("starred_by"), pk=project_id,
+    )
+    if request.method in ("GET", "HEAD"):
+        serializer = ProjectSerializer(project, context={"request": request})
+        return Response(serializer.data)
+
+    if request.method == "DELETE":
+        project.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    serializer = ProjectSerializer(
+        project, data=request.data, partial=request.method == "PATCH",
+        context={"request": request},
+    )
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    return Response(serializer.data)
