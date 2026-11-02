@@ -57,6 +57,7 @@
     const STAR_PROJECT_ENDPOINT = "{% url 'api:project-star' '00000000-0000-0000-0000-000000000000' %}";
     const IS_SUPERUSER = "{{ user.is_superuser|yesno:'true,false' }}" === "true";
     const IS_AUTHENTICATED = "{{ user.is_authenticated|yesno:'true,false' }}" === "true";
+    const CAN_EDIT = "{{ is_editor|yesno:'true,false' }}" === "true";
 
     const loadingState = document.getElementById('loading');
     const errorState = document.getElementById('error');
@@ -96,24 +97,36 @@
     function buildProjectCardElement(project) {
         const article = document.createElement('article');
         article.className = 'experience-card';
+
         const image = project.project_image_url
             ? `<img src="${escapeHtml(project.project_image_url)}" alt="${escapeHtml(project.title)}" class="project-image">` : '';
+
         const link = project.project_url
             ? `<a href="${escapeHtml(project.project_url)}" class="button">Buka project</a>` : '';
+
         const star = IS_AUTHENTICATED
             ? `<button type="button" class="button button-star${project.is_starred ? ' is-starred' : ''}"
                 data-action="star" data-id="${escapeHtml(project.id)}"
                 title="${escapeHtml(project.starred_by_names)}">
                 ${project.is_starred ? 'Unstar' : 'Star'} (${project.star_count})</button>`
             : `<a href="{% url 'main:login' %}" class="button">Login to star (${project.star_count})</a>`;
+
+        // 2. Render Edit button if CAN_EDIT is true
+        const edit = CAN_EDIT
+            ? `<button type="button" class="button" data-action="edit"
+                data-id="${escapeHtml(project.id)}">Edit</button>` : '';
+
         const remove = IS_SUPERUSER
             ? `<button type="button" class="button button-danger" data-action="delete"
                 data-id="${escapeHtml(project.id)}">Hapus</button>` : '';
+
+        // 3. Include ${edit} in template literal
         article.innerHTML = `${image}<h2>${escapeHtml(project.title)}</h2>
             <span class="experience-category">${escapeHtml(project.tech_stack)}</span>
             <p class="experience-description">${escapeHtml(project.description)}</p>
             <div class="project-card-actions"><div class="project-actions">
-            ${link}${star}${remove}</div></div>`;
+            ${link}${star}${edit}${remove}</div></div>`;
+
         return article;
     }
 

@@ -8,13 +8,13 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from main.models import Project
-from main.permissions import IsPortfolioOwnerOrEditorOrReadOnly, IsPortfolioOwnerOrReadOnly
+from main.permissions import IsPortfolioOwnerOrEditorOrReadOnly
 from main.serializers import ProjectSerializer
 
 
 @api_view(["GET", "HEAD", "POST"])
 @authentication_classes([SessionAuthentication])
-@permission_classes([IsPortfolioOwnerOrReadOnly])
+@permission_classes([IsPortfolioOwnerOrEditorOrReadOnly])
 def project_list(request):
     if request.method in ("GET", "HEAD"):
         projects = Project.objects.prefetch_related("starred_by").order_by("title", "id")
