@@ -210,11 +210,11 @@ async function handleProjectSubmit(event) {
             // REST EDIT: PATCH request to /api/v1/projects/<id>/
             const endpoint = projectEndpoint(DETAIL_PROJECT_ENDPOINT, currentEditingProjectId);
             await writeProject(endpoint, 'PATCH', payload);
-            showToast('Success', 'Project updated.', 'sukses');
+            showToast('Success', 'Projek berhasil diperbaharui.', 'sukses');
         } else {
             // REST CREATE: POST request to /api/v1/projects/
             await writeProject(BASE_PROJECTS_ENDPOINT, 'POST', payload);
-            showToast('Success', 'Project created.', 'sukses');
+            showToast('Success', 'Project berhasil dibuat.', 'sukses');
         }
 
         form.reset();
