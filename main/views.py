@@ -18,6 +18,9 @@ def show_main(request):
     # form buat popover
     edu_form = EduForm(request.POST or None)
     hobby_form = HobbyForm(request.POST or None)
+    is_editor = request.user.is_authenticated and (
+        request.user.is_superuser or request.user.groups.filter(name="Editor").exists()
+    )
 
     # last login buat ditampilin
     last_login = request.COOKIES.get('last_login', 'Belom ada sesi login / Cookie tidak ditemukan')
@@ -50,6 +53,7 @@ def show_main(request):
         "edu_form" : EduForm(),
         "hobby_form" : HobbyForm(),
         "last_login": last_login,
+        "is_editor": is_editor,
     }
     return render(request, "index.html", context)
 
@@ -136,10 +140,15 @@ def project_view(request):
     return show_project(request)
 
 def show_experience(request):
+    is_editor = request.user.is_authenticated and (
+        request.user.is_superuser or request.user.groups.filter(name="Editor").exists()
+    )
+
     context = {
         "name": "Ahmad Rafa Robyan",
         "experience_list": Experience.objects.all(),
         "experience_form" : ExperienceForm(),
+        "is_editor": is_editor,
     }
     return render(request, "experience.html", context)
 
