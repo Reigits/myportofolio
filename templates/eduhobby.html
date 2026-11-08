@@ -6,12 +6,15 @@
                 <h1 class="eduhobby-title">My Education</h1>
                 {% if user.is_superuser %}
                     <button type="button"
-                            class="button small"
+                            class="button small edu-add-button"
                             popovertarget="add-education"
                             aria-label="Tambah Pendidikan"
                             title="Tambah Pendidikan">
                         + Tambah Pendidikan
                     </button>
+                {% endif %}
+
+                {% if is_editor %}
                     {% include 'components/add_form.html' with action_url="/" modal_id="add-education" model_name="pendidikan" model_title="Pendidikan" target_form=edu_form form_type="education" %}
                 {% endif %}
             </div>
@@ -31,12 +34,15 @@
                 <h1 class="eduhobby-title">My Hobby</h1>
                 {% if user.is_superuser %}
                     <button type="button"
-                            class="button small"
+                            class="button small hobby-add-button"
                             popovertarget="add-hobby"
                             aria-label="Tambah Hobi"
                             title="Tambah Hobi">
                         + Tambah Hobi
                     </button>
+                {% endif %}
+
+                {% if is_editor %}
                     {% include 'components/add_form.html' with action_url="/" modal_id="add-hobby" model_name="hobby" model_title="Hobi" target_form=hobby_form form_type="hobby" %}
                 {% endif %}
             </div>
@@ -53,7 +59,7 @@
 </section>
 
 <script>
-// RESTful Endpoints
+// REST Endpoints
 const BASE_EDUCATION_ENDPOINT = "{% url 'api:education-list' %}";
 const DETAIL_EDUCATION_ENDPOINT = "{% url 'api:education-detail' '00000000-0000-0000-0000-000000000000' %}";
 
@@ -61,51 +67,13 @@ const BASE_HOBBY_ENDPOINT = "{% url 'api:hobby-list' %}";
 const DETAIL_HOBBY_ENDPOINT = "{% url 'api:hobby-detail' '00000000-0000-0000-0000-000000000000' %}";
 
 const IS_SUPERUSER = "{{ user.is_superuser|yesno:'true,false' }}" === "true";
+const CAN_EDIT = "{{ is_editor|yesno:'true,false' }}" === "true";
 
 let eduAbortController;
 let hobbyAbortController;
 
-function escapeHtml(value) {
-    return String(value ?? '')
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#39;');
-}
-
-function getCookie(name) {
-    const prefix = `${name}=`;
-    const cookie = document.cookie.split(';').map(value => value.trim())
-        .find(value => value.startsWith(prefix));
-    return cookie ? decodeURIComponent(cookie.slice(prefix.length)) : null;
-}
-
-function buildEndpoint(pattern, id) {
-    return pattern.replace('00000000-0000-0000-0000-000000000000', id);
-}
-
-function apiErrorMessage(data, status) {
-    const messages = Object.values(data).flat().filter(value => typeof value === 'string');
-    return messages.join(' ') || `Request failed (HTTP ${status}).`;
-}
-
-// REST helper for write actions (POST, PATCH, DELETE)
-async function writeApiData(url, method, payload) {
-    const response = await fetch(url, {
-        method,
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken'),
-        },
-        body: payload === undefined ? undefined : JSON.stringify(payload),
-    });
-    if (response.status === 204) return null;
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(apiErrorMessage(data, response.status));
-    return data;
-}
+let currentEditingEduId = null;
+let currentEditingHobbyId = null;
 
 // DOM Elements
 const eduLoading = document.getElementById('edu-loading');
@@ -118,6 +86,30 @@ const hobbyError = document.getElementById('hobby-error');
 const hobbyEmpty = document.getElementById('hobby-empty');
 const hobbyList = document.getElementById('hobby-list');
 
+const eduModal = document.getElementById('add-education');
+const eduForm = document.querySelector('#add-education form');
+const addEduButton = document.querySelector('.edu-add-button');
+
+const hobbyModal = document.getElementById('add-hobby');
+const hobbyForm = document.querySelector('#add-hobby form');
+const addHobbyButton = document.querySelector('.hobby-add-button');
+
+// Helpers
+function escapeHtml(value) {
+    return String(value ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
+}
+
+function getCookie(name) {
+    const prefix = `${name}=`;
+    const cookie = document.cookie.split(';').map(v => v.trim()).find(v => v.startsWith(prefix));
+    return cookie ? decodeURIComponent(cookie.slice(prefix.length)) : null;
+}
+
+function buildEndpoint(pattern, id) {
+    return pattern.replace('00000000-0000-0000-0000-000000000000', id);
+}
+
 function displaySection(elements, { showLoading = false, showError = false, showEmpty = false, showList = false }) {
     elements.loading.classList.toggle('hide', !showLoading);
     elements.error.classList.toggle('hide', !showError);
@@ -125,17 +117,60 @@ function displaySection(elements, { showLoading = false, showError = false, show
     elements.list.classList.toggle('hide', !showList);
 }
 
-// Builder Row Edukasi (Reads directly from DRF JSON output)
+async function writeApiData(url, method, payload) {
+    const response = await fetch(url, {
+        method,
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+        body: payload === undefined ? undefined : JSON.stringify(payload),
+    });
+    if (response.status === 204) return null;
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+        const msgs = Object.values(data).flat().filter(v => typeof v === 'string');
+        throw new Error(msgs.join(' ') || `Request failed (HTTP ${response.status}).`);
+    }
+    return data;
+}
+
+// Reset state when "+ Tambah" buttons are clicked
+if (addEduButton) {
+    addEduButton.addEventListener('click', () => {
+        currentEditingEduId = null;
+        if (eduForm) eduForm.reset();
+    });
+}
+
+if (addHobbyButton) {
+    addHobbyButton.addEventListener('click', () => {
+        currentEditingHobbyId = null;
+        if (hobbyForm) hobbyForm.reset();
+    });
+}
+
+// -----------------------------------------------------------------------------
+// EDUCATION LOGIC
+// -----------------------------------------------------------------------------
+
 function buildEducationRowElement(edu) {
     const row = document.createElement('div');
     row.className = 'content-row';
 
     const endYearText = edu.is_ongoing ? 'Sekarang' : (edu.ended_at || '-');
 
-    const actionsHtml = IS_SUPERUSER
-        ? `<div class="action-row">
-            <button type="button" class="button button-danger small" data-action="delete" data-id="${escapeHtml(edu.id)}">Hapus Edukasi</button>
-        </div>`
+    const editBtn = CAN_EDIT
+        ? `<button type="button" class="button small" data-action="edit" data-id="${escapeHtml(edu.id)}">Edit</button>`
+        : '';
+
+    const deleteBtn = IS_SUPERUSER
+        ? `<button type="button" class="button button-danger small" data-action="delete" data-id="${escapeHtml(edu.id)}">Hapus</button>`
+        : '';
+
+    const actionsHtml = (editBtn || deleteBtn)
+        ? `<div class="action-row">${editBtn}${deleteBtn}</div>`
         : '';
 
     row.innerHTML = `
@@ -146,32 +181,6 @@ function buildEducationRowElement(edu) {
     return row;
 }
 
-// Builder Row Hobi (Reads directly from DRF JSON output)
-function buildHobbyRowElement(hobby) {
-    const row = document.createElement('div');
-    row.className = 'content-row';
-
-    const actionsHtml = IS_SUPERUSER
-        ? `<div class="action-row">
-            <button type="button" class="button button-danger small" data-action="delete" data-id="${escapeHtml(hobby.id)}">Hapus Hobby</button>
-        </div>`
-        : '';
-
-    row.innerHTML = `
-        <dt>&middot; ${escapeHtml(hobby.title)}</dt>
-        ${actionsHtml}
-    `;
-
-    return row;
-}
-
-const eduModal = document.getElementById('add-education');
-const eduForm = document.querySelector('#add-education form');
-
-const hobbyModal = document.getElementById('add-hobby');
-const hobbyForm = document.querySelector('#add-hobby form');
-
-// Fetch Educations via GET REST Endpoint
 async function fetchEducations() {
     if (eduAbortController) eduAbortController.abort();
     eduAbortController = new AbortController();
@@ -200,7 +209,114 @@ async function fetchEducations() {
     }
 }
 
-// Fetch Hobbies via GET REST Endpoint
+if (eduForm) {
+    eduForm.addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const button = eduForm.querySelector('button[type="submit"]');
+        button.disabled = true;
+
+        try {
+            const formData = new FormData(eduForm);
+            const payload = {
+                title: formData.get('title'),
+                started_at: formData.get('started_at') ? parseInt(formData.get('started_at')) : null,
+                ended_at: formData.get('ended_at') ? parseInt(formData.get('ended_at')) : null,
+            };
+
+            if (currentEditingEduId) {
+                const endpoint = buildEndpoint(DETAIL_EDUCATION_ENDPOINT, currentEditingEduId);
+                await writeApiData(endpoint, 'PATCH', payload);
+                showToast('Success', 'Edukasi berhasil diperbarui.', 'sukses');
+            } else {
+                await writeApiData(BASE_EDUCATION_ENDPOINT, 'POST', payload);
+                showToast('Success', 'Edukasi berhasil ditambahkan.', 'sukses');
+            }
+
+            eduForm.reset();
+            currentEditingEduId = null;
+            if (eduModal && eduModal.hidePopover) eduModal.hidePopover();
+            await fetchEducations();
+        } catch (error) {
+            showToast('Gagal', error.message, 'error');
+        } finally {
+            button.disabled = false;
+        }
+    });
+}
+
+eduList.addEventListener('click', async function(event) {
+    const button = event.target.closest('button[data-action]');
+    if (!button || button.disabled) return;
+
+    const action = button.dataset.action;
+    const id = button.dataset.id;
+
+    if (action === 'edit') {
+        button.disabled = true;
+        try {
+            const endpoint = buildEndpoint(DETAIL_EDUCATION_ENDPOINT, id);
+            const response = await fetch(endpoint, { headers: { 'Accept': 'application/json' } });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const edu = await response.json();
+
+            if (eduForm.elements['title']) eduForm.elements['title'].value = edu.title || '';
+            if (eduForm.elements['started_at']) eduForm.elements['started_at'].value = edu.started_at || '';
+            if (eduForm.elements['ended_at']) eduForm.elements['ended_at'].value = edu.ended_at || '';
+
+            currentEditingEduId = id;
+            if (eduModal && eduModal.showPopover) eduModal.showPopover();
+        } catch (error) {
+            showToast('Gagal', error.message, 'error');
+        } finally {
+            button.disabled = false;
+        }
+        return;
+    }
+
+    if (action === 'delete') {
+        if (!window.confirm('Hapus edukasi ini?')) return;
+        button.disabled = true;
+        try {
+            const endpoint = buildEndpoint(DETAIL_EDUCATION_ENDPOINT, id);
+            await writeApiData(endpoint, 'DELETE');
+            showToast('Success', 'Edukasi berhasil dihapus.', 'sukses');
+            await fetchEducations();
+        } catch (error) {
+            showToast('Request failed', error.message, 'error');
+        } finally {
+            button.disabled = false;
+        }
+    }
+});
+
+// -----------------------------------------------------------------------------
+// HOBBY LOGIC
+// -----------------------------------------------------------------------------
+
+function buildHobbyRowElement(hobby) {
+    const row = document.createElement('div');
+    row.className = 'content-row';
+
+    const editBtn = CAN_EDIT
+        ? `<button type="button" class="button small" data-action="edit" data-id="${escapeHtml(hobby.id)}">Edit</button>`
+        : '';
+
+    const deleteBtn = IS_SUPERUSER
+        ? `<button type="button" class="button button-danger small" data-action="delete" data-id="${escapeHtml(hobby.id)}">Hapus</button>`
+        : '';
+
+    const actionsHtml = (editBtn || deleteBtn)
+        ? `<div class="action-row">${editBtn}${deleteBtn}</div>`
+        : '';
+
+    row.innerHTML = `
+        <dt>&middot; ${escapeHtml(hobby.title)}</dt>
+        ${actionsHtml}
+    `;
+
+    return row;
+}
+
 async function fetchHobbies() {
     if (hobbyAbortController) hobbyAbortController.abort();
     hobbyAbortController = new AbortController();
@@ -229,35 +345,6 @@ async function fetchHobbies() {
     }
 }
 
-// Add Education (POST request to REST endpoint)
-if (eduForm) {
-    eduForm.addEventListener('submit', async function(event) {
-        event.preventDefault();
-        const button = eduForm.querySelector('button[type="submit"]');
-        button.disabled = true;
-
-        try {
-            const formData = new FormData(eduForm);
-            const payload = {
-                title: formData.get('title'),
-                started_at: formData.get('started_at') ? parseInt(formData.get('started_at')) : null,
-                ended_at: formData.get('ended_at') ? parseInt(formData.get('ended_at')) : null,
-            };
-
-            await writeApiData(BASE_EDUCATION_ENDPOINT, 'POST', payload);
-            eduForm.reset();
-            if (eduModal && eduModal.hidePopover) eduModal.hidePopover();
-            showToast('Berhasil', 'Pendidikan berhasil ditambahkan!', 'success');
-            await fetchEducations();
-        } catch (error) {
-            showToast('Gagal menambahkan pendidikan', error.message, 'error');
-        } finally {
-            button.disabled = false;
-        }
-    });
-}
-
-// Add Hobby (POST request to REST endpoint)
 if (hobbyForm) {
     hobbyForm.addEventListener('submit', async function(event) {
         event.preventDefault();
@@ -268,56 +355,71 @@ if (hobbyForm) {
             const formData = new FormData(hobbyForm);
             const payload = { title: formData.get('title') };
 
-            await writeApiData(BASE_HOBBY_ENDPOINT, 'POST', payload);
+            if (currentEditingHobbyId) {
+                const endpoint = buildEndpoint(DETAIL_HOBBY_ENDPOINT, currentEditingHobbyId);
+                await writeApiData(endpoint, 'PATCH', payload);
+                showToast('Success', 'Hobi berhasil diperbarui.', 'sukses');
+            } else {
+                await writeApiData(BASE_HOBBY_ENDPOINT, 'POST', payload);
+                showToast('Success', 'Hobi berhasil ditambahkan.', 'sukses');
+            }
+
             hobbyForm.reset();
+            currentEditingHobbyId = null;
             if (hobbyModal && hobbyModal.hidePopover) hobbyModal.hidePopover();
-            showToast('Berhasil', 'Hobi berhasil ditambahkan!', 'success');
             await fetchHobbies();
         } catch (error) {
-            showToast('Gagal menambahkan hobi', error.message, 'error');
+            showToast('Gagal', error.message, 'error');
         } finally {
             button.disabled = false;
         }
     });
 }
 
-// Delete Handlers using REST DELETE HTTP Requests
-eduList.addEventListener('click', async function(event) {
-    const button = event.target.closest('button[data-action="delete"]');
-    if (!button || button.disabled) return;
-    if (!window.confirm('Hapus edukasi ini?')) return;
-
-    button.disabled = true;
-    try {
-        const endpoint = buildEndpoint(DETAIL_EDUCATION_ENDPOINT, button.dataset.id);
-        await writeApiData(endpoint, 'DELETE');
-        showToast('Success', 'Edukasi berhasil dihapus.', 'sukses');
-        await fetchEducations();
-    } catch (error) {
-        showToast('Request failed', error.message, 'error');
-    } finally {
-        button.disabled = false;
-    }
-});
-
 hobbyList.addEventListener('click', async function(event) {
-    const button = event.target.closest('button[data-action="delete"]');
+    const button = event.target.closest('button[data-action]');
     if (!button || button.disabled) return;
-    if (!window.confirm('Hapus hobi ini?')) return;
 
-    button.disabled = true;
-    try {
-        const endpoint = buildEndpoint(DETAIL_HOBBY_ENDPOINT, button.dataset.id);
-        await writeApiData(endpoint, 'DELETE');
-        showToast('Success', 'Hobi berhasil dihapus.', 'sukses');
-        await fetchHobbies();
-    } catch (error) {
-        showToast('Request failed', error.message, 'error');
-    } finally {
-        button.disabled = false;
+    const action = button.dataset.action;
+    const id = button.dataset.id;
+
+    if (action === 'edit') {
+        button.disabled = true;
+        try {
+            const endpoint = buildEndpoint(DETAIL_HOBBY_ENDPOINT, id);
+            const response = await fetch(endpoint, { headers: { 'Accept': 'application/json' } });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const hobby = await response.json();
+
+            if (hobbyForm.elements['title']) hobbyForm.elements['title'].value = hobby.title || '';
+
+            currentEditingHobbyId = id;
+            if (hobbyModal && hobbyModal.showPopover) hobbyModal.showPopover();
+        } catch (error) {
+            showToast('Gagal', error.message, 'error');
+        } finally {
+            button.disabled = false;
+        }
+        return;
+    }
+
+    if (action === 'delete') {
+        if (!window.confirm('Hapus hobi ini?')) return;
+        button.disabled = true;
+        try {
+            const endpoint = buildEndpoint(DETAIL_HOBBY_ENDPOINT, id);
+            await writeApiData(endpoint, 'DELETE');
+            showToast('Success', 'Hobi berhasil dihapus.', 'sukses');
+            await fetchHobbies();
+        } catch (error) {
+            showToast('Request failed', error.message, 'error');
+        } finally {
+            button.disabled = false;
+        }
     }
 });
 
+// Initial Fetch
 fetchEducations();
 fetchHobbies();
 </script>

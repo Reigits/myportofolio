@@ -128,7 +128,7 @@ def education_list(request):
 
 @api_view(["GET", "HEAD", "PUT", "PATCH", "DELETE"])
 @authentication_classes([SessionAuthentication])
-@permission_classes([IsPortfolioOwnerOrReadOnly])
+@permission_classes([IsPortfolioOwnerOrEditorOrReadOnly])
 def education_detail(request, edu_id):
     edu = get_object_or_404(Education, pk=edu_id)
     if request.method in ("GET", "HEAD"):
@@ -168,7 +168,7 @@ def hobby_list(request):
 
 @api_view(["GET", "HEAD", "PUT", "PATCH", "DELETE"])
 @authentication_classes([SessionAuthentication])
-@permission_classes([IsPortfolioOwnerOrReadOnly])
+@permission_classes([IsPortfolioOwnerOrEditorOrReadOnly])
 def hobby_detail(request, hobby_id):
     hobby = get_object_or_404(Hobby, pk=hobby_id)
     if request.method in ("GET", "HEAD"):
