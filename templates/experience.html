@@ -8,72 +8,111 @@
             <div class="project-header">
                 <h1>Experience</h1>
                 {% if user.is_superuser %}
-                    <button type="button"
-                            class="button small"
-                            popovertarget="add-experience"
-                            aria-label="Tambah Pengalaman"
-                            title="Tambah Pengalaman">
-                        + Tambah Pengalaman
-                    </button>
+                <button type="button"
+                        class="button small experience-add-button"
+                        popovertarget="add-experience">
+                    + Tambah Pengalaman
+                </button>
+                {% endif %}
+
+                <!-- Render modal if Superuser OR Editor -->
+                {% if is_editor %}
                     {% include 'components/add_form.html' with action_url="/experience/" modal_id="add-experience" model_name="experience" model_title="Pengalaman" target_form=experience_form %}
                 {% endif %}
             </div>
 
-            <!-- Loading State -->
-            <div id="experience-loading" class="empty-state hide">
-                <p>Memuat pengalaman...</p>
-            </div>
+            <div id="experience-loading" class="empty-state hide"><p>Memuat pengalaman...</p></div>
+            <div id="experience-error" class="empty-state hide"><p>Gagal memuat data pengalaman.</p></div>
+            <div id="experience-empty" class="empty-state hide"><p>Belum ada pengalaman.</p></div>
 
-            <!-- Error State -->
-            <div id="experience-error" class="empty-state hide">
-                <p>Gagal memuat data pengalaman. Silakan coba lagi.</p>
-            </div>
-
-            <!-- Empty State -->
-            <div id="experience-empty" class="empty-state hide">
-                <p>Belum ada pengalaman yang ditambahkan.</p>
-            </div>
-
-            <!-- Experience Grid -->
             <div id="experience-grid" class="experience-grid hide"></div>
         </div>
     </section>
 </main>
 
 <script>
-// RESTful Endpoints
 const BASE_EXPERIENCE_ENDPOINT = "{% url 'api:experience-list' %}";
 const DETAIL_EXPERIENCE_ENDPOINT = "{% url 'api:experience-detail' '00000000-0000-0000-0000-000000000000' %}";
+
 const IS_SUPERUSER = "{{ user.is_superuser|yesno:'true,false' }}" === "true";
+const CAN_EDIT = "{{ is_editor|yesno:'true,false' }}" === "true";
 
 let experienceAbortController;
+let currentEditingId = null;
 
-function escapeHtml(value) {
-    return String(value ?? '')
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#39;');
+const loadingState = document.getElementById('experience-loading');
+const errorState = document.getElementById('experience-error');
+const emptyState = document.getElementById('experience-empty');
+const gridContainer = document.getElementById('experience-grid');
+
+const experienceModal = document.getElementById('add-experience');
+const addExperienceButton = document.querySelector('.experience-add-button');
+
+function getExperienceForm() {
+    return document.querySelector('#add-experience form') || document.getElementById('experience-form');
 }
 
 function getCookie(name) {
     const prefix = `${name}=`;
-    const cookie = document.cookie.split(';').map(value => value.trim())
-        .find(value => value.startsWith(prefix));
+    const cookie = document.cookie.split(';').map(v => v.trim()).find(v => v.startsWith(prefix));
     return cookie ? decodeURIComponent(cookie.slice(prefix.length)) : null;
+}
+
+function escapeHtml(val) {
+    return String(val ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
 }
 
 function buildEndpoint(pattern, id) {
     return pattern.replace('00000000-0000-0000-0000-000000000000', id);
 }
 
-function apiErrorMessage(data, status) {
-    const messages = Object.values(data).flat().filter(value => typeof value === 'string');
-    return messages.join(' ') || `Request failed (HTTP ${status}).`;
+function displayPageSection({ showLoading = false, showError = false, showEmpty = false, showGrid = false }) {
+    loadingState.classList.toggle('hide', !showLoading);
+    errorState.classList.toggle('hide', !showError);
+    emptyState.classList.toggle('hide', !showEmpty);
+    gridContainer.classList.toggle('hide', !showGrid);
 }
 
-// REST helper function (matching writeProject)
+// 1. BUILD CARD WITH EDIT BUTTON FOR EDITORS
+function buildExperienceCardElement(exp) {
+    const articleElement = document.createElement('article');
+    articleElement.className = 'experience-card';
+
+    const statusText = exp.is_ongoing ? 'Sedang berlangsung' : 'Selesai';
+
+    const editBtn = CAN_EDIT
+        ? `<button type="button" class="button small" data-action="edit" data-id="${escapeHtml(exp.id)}">Edit</button>`
+        : '';
+
+    const deleteBtn = IS_SUPERUSER
+        ? `<button type="button" class="button button-danger small" data-action="delete" data-id="${escapeHtml(exp.id)}">Hapus</button>`
+        : '';
+
+    articleElement.innerHTML = `
+        <span class="experience-category">${escapeHtml(exp.category)}</span>
+        <h2>${escapeHtml(exp.title)}</h2>
+        <p class="experience-description">${escapeHtml(exp.description)}</p>
+        <p class="experience-status">${escapeHtml(statusText)}</p>
+        <div class="project-actions">
+            ${editBtn}
+            ${deleteBtn}
+        </div>
+    `;
+
+    return articleElement;
+}
+
+// Reset state when clicking "+ Tambah Pengalaman"
+if (addExperienceButton) {
+    addExperienceButton.addEventListener('click', () => {
+        currentEditingId = null;
+        const form = getExperienceForm();
+        if (form) form.reset();
+    });
+}
+
+// REST Write Function (POST/PATCH/DELETE)
 async function writeApiData(url, method, payload) {
     const response = await fetch(url, {
         method,
@@ -86,50 +125,14 @@ async function writeApiData(url, method, payload) {
     });
     if (response.status === 204) return null;
     const data = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(apiErrorMessage(data, response.status));
+    if (!response.ok) {
+        const msgs = Object.values(data).flat().filter(v => typeof v === 'string');
+        throw new Error(msgs.join(' ') || `HTTP ${response.status}`);
+    }
     return data;
 }
 
-const loadingState = document.getElementById('experience-loading');
-const errorState = document.getElementById('experience-error');
-const emptyState = document.getElementById('experience-empty');
-const gridContainer = document.getElementById('experience-grid');
-
-const experienceModal = document.getElementById('add-experience');
-const experienceForm = document.querySelector('#add-experience form') || document.getElementById('add-experience-form');
-
-function displayPageSection({ showLoading = false, showError = false, showEmpty = false, showGrid = false }) {
-    loadingState.classList.toggle('hide', !showLoading);
-    errorState.classList.toggle('hide', !showError);
-    emptyState.classList.toggle('hide', !showEmpty);
-    gridContainer.classList.toggle('hide', !showGrid);
-}
-
-// Card Builder (Reads flat properties directly from DRF output)
-function buildExperienceCardElement(exp) {
-    const articleElement = document.createElement('article');
-    articleElement.className = 'experience-card';
-
-    const statusText = exp.is_ongoing ? 'Sedang berlangsung' : 'Selesai';
-
-    const deleteHtml = IS_SUPERUSER
-        ? `<button type="button" class="button button-danger small" data-action="delete" data-id="${escapeHtml(exp.id)}">Hapus Pengalaman</button>`
-        : '';
-
-    articleElement.innerHTML = `
-        <span class="experience-category">${escapeHtml(exp.category)}</span>
-        <h2>${escapeHtml(exp.title)}</h2>
-        <p class="experience-description">${escapeHtml(exp.description)}</p>
-        <p class="experience-status">${escapeHtml(statusText)}</p>
-        <div class="project-actions">
-            ${deleteHtml}
-        </div>
-    `;
-
-    return articleElement;
-}
-
-// Fetch list using REST GET
+// 2. FETCH EXPERIENCES (GET)
 async function fetchExperiences() {
     if (experienceAbortController) experienceAbortController.abort();
     experienceAbortController = new AbortController();
@@ -142,67 +145,108 @@ async function fetchExperiences() {
         });
 
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const experienceData = await response.json();
+        const data = await response.json();
 
-        if (experienceData.length === 0) {
+        if (data.length === 0) {
             displayPageSection({ showEmpty: true });
         } else {
-            gridContainer.replaceChildren(...experienceData.map(buildExperienceCardElement));
+            gridContainer.replaceChildren(...data.map(buildExperienceCardElement));
             displayPageSection({ showGrid: true });
         }
     } catch (error) {
         if (error.name === 'AbortError') return;
-        console.error(error);
         displayPageSection({ showError: true });
     }
 }
 
-// Add Experience using REST POST
-if (experienceForm) {
-    experienceForm.addEventListener('submit', async function(event) {
+// 3. HANDLE FORM SUBMISSION (CREATE = POST, EDIT = PATCH)
+const activeForm = getExperienceForm();
+if (activeForm) {
+    activeForm.addEventListener('submit', async function(event) {
         event.preventDefault();
-        const submitButton = experienceForm.querySelector('button[type="submit"]');
-        submitButton.disabled = true;
+        const button = activeForm.querySelector('button[type="submit"]');
+        button.disabled = true;
 
         try {
-            const formData = new FormData(experienceForm);
+            const formData = new FormData(activeForm);
             const payload = Object.fromEntries([
                 'title', 'description', 'category', 'thumbnail', 'started_at', 'ended_at'
             ].map(name => [name, formData.get(name) || null]));
 
-            await writeApiData(BASE_EXPERIENCE_ENDPOINT, 'POST', payload);
-            experienceForm.reset();
-
-            if (experienceModal && typeof experienceModal.hidePopover === 'function') {
-                experienceModal.hidePopover();
+            if (currentEditingId) {
+                // PATCH request to /api/v1/experiences/<id>/
+                const endpoint = buildEndpoint(DETAIL_EXPERIENCE_ENDPOINT, currentEditingId);
+                await writeApiData(endpoint, 'PATCH', payload);
+                showToast('Success', 'Pengalaman berhasil diperbarui.', 'sukses');
+            } else {
+                // POST request to /api/v1/experiences/
+                await writeApiData(BASE_EXPERIENCE_ENDPOINT, 'POST', payload);
+                showToast('Success', 'Pengalaman berhasil ditambahkan.', 'sukses');
             }
 
-            showToast('Berhasil', 'Pengalaman baru berhasil ditambahkan!', 'success');
+            activeForm.reset();
+            currentEditingId = null;
+            if (experienceModal && experienceModal.hidePopover) experienceModal.hidePopover();
             await fetchExperiences();
         } catch (error) {
-            showToast('Gagal menambahkan pengalaman', error.message, 'error');
+            showToast('Gagal', error.message, 'error');
         } finally {
-            submitButton.disabled = false;
+            button.disabled = false;
         }
     });
 }
 
-// Delete Experience using REST DELETE
+// 4. CLICK HANDLERS FOR EDIT AND DELETE BUTTONS
 gridContainer.addEventListener('click', async function(event) {
-    const button = event.target.closest('button[data-action="delete"]');
+    const button = event.target.closest('button[data-action]');
     if (!button || button.disabled) return;
-    if (!window.confirm('Yakin ingin menghapus pengalaman ini?')) return;
 
-    button.disabled = true;
-    try {
-        const endpoint = buildEndpoint(DETAIL_EXPERIENCE_ENDPOINT, button.dataset.id);
-        await writeApiData(endpoint, 'DELETE');
-        showToast('Success', 'Pengalaman berhasil dihapus.', 'sukses');
-        await fetchExperiences();
-    } catch (error) {
-        showToast('Request failed', error.message, 'error');
-    } finally {
-        button.disabled = false;
+    const action = button.dataset.action;
+    const id = button.dataset.id;
+
+    if (action === 'edit') {
+        button.disabled = true;
+        try {
+            const form = getExperienceForm();
+            if (!form) throw new Error("Form modal tidak ditemukan.");
+
+            // Fetch current record from DRF
+            const endpoint = buildEndpoint(DETAIL_EXPERIENCE_ENDPOINT, id);
+            const response = await fetch(endpoint, { headers: { 'Accept': 'application/json' } });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const exp = await response.json();
+
+            // Fill form inputs
+            if (form.elements['title']) form.elements['title'].value = exp.title || '';
+            if (form.elements['description']) form.elements['description'].value = exp.description || '';
+            if (form.elements['category']) form.elements['category'].value = exp.category || 'full-time';
+            if (form.elements['thumbnail']) form.elements['thumbnail'].value = exp.thumbnail || '';
+            if (form.elements['started_at']) form.elements['started_at'].value = exp.started_at ? exp.started_at.slice(0, 16) : '';
+            if (form.elements['ended_at']) form.elements['ended_at'].value = exp.ended_at ? exp.ended_at.slice(0, 16) : '';
+
+            currentEditingId = id;
+            if (experienceModal && experienceModal.showPopover) experienceModal.showPopover();
+        } catch (error) {
+            showToast('Error', error.message, 'error');
+        } finally {
+            button.disabled = false;
+        }
+        return;
+    }
+
+    if (action === 'delete') {
+        if (!window.confirm('Hapus pengalaman ini?')) return;
+        button.disabled = true;
+        try {
+            const endpoint = buildEndpoint(DETAIL_EXPERIENCE_ENDPOINT, id);
+            await writeApiData(endpoint, 'DELETE');
+            showToast('Success', 'Pengalaman berhasil dihapus.', 'sukses');
+            await fetchExperiences();
+        } catch (error) {
+            showToast('Error', error.message, 'error');
+        } finally {
+            button.disabled = false;
+        }
     }
 });
 
