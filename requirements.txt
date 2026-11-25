@@ -11,3 +11,4 @@ sqlparse
 urllib3
 whitenoise
 djangorestframework~=3.18.3
+django-cors-headers

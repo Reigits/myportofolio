@@ -11,6 +11,7 @@ class MainTest(TestCase):
             title="Asisten Dosen PBP",
             description="Membantu mahasiswa memahami pengembangan web.",
             category="part-time",
+            started_at=timezone.now(),
         )
 
         self.education = Education.objects.create(
